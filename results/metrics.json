@@ -1,0 +1,89 @@
+{
+  "random_seed": 42,
+  "best_epoch": 40,
+  "best_val_loss": 0.04023271054029465,
+  "training_partition": {
+    "loss": 0.03982999920845032,
+    "metrics": {
+      "accuracy": 0.9874371859296482,
+      "precision": 0.9803921568627451,
+      "recall": 1.0,
+      "f1": 0.9900990099009901,
+      "roc_auc": 0.9998108108108108,
+      "confusion_matrix": {
+        "raw_matrix": [
+          [
+            143,
+            5
+          ],
+          [
+            0,
+            250
+          ]
+        ],
+        "true_malignant_pred_malignant": 143,
+        "true_malignant_pred_benign": 5,
+        "true_benign_pred_malignant": 0,
+        "true_benign_pred_benign": 250
+      },
+      "decision_threshold": 0.5,
+      "sample_count": 398
+    }
+  },
+  "validation_partition": {
+    "loss": 0.04023271054029465,
+    "metrics": {
+      "accuracy": 0.9882352941176471,
+      "precision": 0.9814814814814815,
+      "recall": 1.0,
+      "f1": 0.9906542056074766,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "raw_matrix": [
+          [
+            31,
+            1
+          ],
+          [
+            0,
+            53
+          ]
+        ],
+        "true_malignant_pred_malignant": 31,
+        "true_malignant_pred_benign": 1,
+        "true_benign_pred_malignant": 0,
+        "true_benign_pred_benign": 53
+      },
+      "decision_threshold": 0.5,
+      "sample_count": 85
+    }
+  },
+  "test_partition": {
+    "loss": 0.10753678530454636,
+    "metrics": {
+      "accuracy": 0.9651162790697675,
+      "precision": 0.9473684210526315,
+      "recall": 1.0,
+      "f1": 0.972972972972973,
+      "roc_auc": 0.9936342592592593,
+      "confusion_matrix": {
+        "raw_matrix": [
+          [
+            29,
+            3
+          ],
+          [
+            0,
+            54
+          ]
+        ],
+        "true_malignant_pred_malignant": 29,
+        "true_malignant_pred_benign": 3,
+        "true_benign_pred_malignant": 0,
+        "true_benign_pred_benign": 54
+      },
+      "decision_threshold": 0.5,
+      "sample_count": 86
+    }
+  }
+}

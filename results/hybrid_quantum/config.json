@@ -1,0 +1,95 @@
+{
+  "random_seed": 42,
+  "dataset": {
+    "name": "Breast Cancer Wisconsin Diagnostic",
+    "source": "sklearn.datasets.load_breast_cancer",
+    "target_label_mapping": {
+      "0": "malignant",
+      "1": "benign"
+    },
+    "features_count": 30,
+    "feature_names": [
+      "mean radius",
+      "mean texture",
+      "mean perimeter",
+      "mean area",
+      "mean smoothness",
+      "mean compactness",
+      "mean concavity",
+      "mean concave points",
+      "mean symmetry",
+      "mean fractal dimension",
+      "radius error",
+      "texture error",
+      "perimeter error",
+      "area error",
+      "smoothness error",
+      "compactness error",
+      "concavity error",
+      "concave points error",
+      "symmetry error",
+      "fractal dimension error",
+      "worst radius",
+      "worst texture",
+      "worst perimeter",
+      "worst area",
+      "worst smoothness",
+      "worst compactness",
+      "worst concavity",
+      "worst concave points",
+      "worst symmetry",
+      "worst fractal dimension"
+    ],
+    "sample_counts": {
+      "total": 569,
+      "train": 398,
+      "val": 85,
+      "test": 86
+    },
+    "class_distribution": {
+      "train": {
+        "malignant": 148,
+        "benign": 250
+      },
+      "val": {
+        "malignant": 32,
+        "benign": 53
+      },
+      "test": {
+        "malignant": 32,
+        "benign": 54
+      },
+      "total": {
+        "malignant": 212,
+        "benign": 357
+      }
+    },
+    "split_ratios": {
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15
+    }
+  },
+  "model": {
+    "type": "HybridQuantumClassifier",
+    "input_dim": 30,
+    "n_qubits": 4,
+    "n_layers": 2,
+    "encoder_hidden_dim": 16,
+    "quantum_parameters_count": 16,
+    "diff_method": "backprop",
+    "device_backend": "default.qubit"
+  },
+  "training": {
+    "epochs_max": 25,
+    "epochs_trained": 25,
+    "best_epoch": 19,
+    "patience": 10,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "loss_function": "BCEWithLogitsLoss",
+    "optimizer": "AdamW",
+    "device": "cpu"
+  }
+}
