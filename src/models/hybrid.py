@@ -1,11 +1,11 @@
-"""Hybrid Classical-Quantum Classifier combining PyTorch neural networks and PennyLane QNodes."""
+"""Hybrid Classical-Quantum Classifiers combining PyTorch neural networks and PennyLane QNodes."""
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 import numpy as np
 import torch
 import torch.nn as nn
 
-from src.models.quantum import QuantumDataReuploadingLayer
+from src.models.quantum import QuantumDataReuploadingLayer, StandardVQCLayer
 
 
 class ClassicalFeatureEncoder(nn.Module):
@@ -40,7 +40,6 @@ class ClassicalFeatureEncoder(nn.Module):
             Angles tensor of shape (batch_size, 4) with values in [-pi, pi].
         """
         raw = self.net(x)
-        # Bounding to [-pi, pi] via tanh activation
         angles = torch.pi * torch.tanh(raw)
         return angles
 
@@ -67,16 +66,14 @@ class ClassicalOutputHead(nn.Module):
 
 class HybridQuantumClassifier(nn.Module):
     """
-    End-to-end differentiable Hybrid Quantum-Classical Classifier.
+    End-to-end differentiable Hybrid Quantum-Classical Classifier with Data Re-uploading.
 
     Architecture:
         x (30 features)
-          -> Classical Feature Encoder
-          -> 4 bounded angles in [-pi, pi]
-          -> 4-Qubit Data Re-uploading Circuit (PennyLane)
+          -> Classical Feature Encoder (30 -> 4 angles in [-pi, pi])
+          -> 4-Qubit Data Re-uploading Circuit (PennyLane, L layers repeating E(x) and U(theta))
           -> 4 Pauli-Z expectation values in [-1, 1]
-          -> Classical Output Head
-          -> 1 Binary Classification Logit
+          -> Classical Output Head (4 -> 1 logit)
     """
 
     def __init__(
@@ -116,15 +113,6 @@ class HybridQuantumClassifier(nn.Module):
         self.output_head = ClassicalOutputHead(in_features=n_qubits)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        End-to-end forward pass producing binary classification logits.
-
-        Args:
-            x: Tensor of standardized input features, shape (batch_size, 30).
-
-        Returns:
-            Logits tensor of shape (batch_size, 1).
-        """
         angles = self.encoder(x)
         expvals = self.quantum_layer(angles)
         logits = self.output_head(expvals)
@@ -151,3 +139,101 @@ class HybridQuantumClassifier(nn.Module):
         """Compute binary class predictions given threshold."""
         probs = self.predict_proba(x)
         return (probs >= threshold).long()
+
+    @property
+    def parameter_breakdown(self) -> Dict[str, int]:
+        """Detailed breakdown of trainable parameters."""
+        encoder_params = sum(p.numel() for p in self.encoder.parameters() if p.requires_grad)
+        quantum_params = sum(p.numel() for p in self.quantum_layer.parameters() if p.requires_grad)
+        head_params = sum(p.numel() for p in self.output_head.parameters() if p.requires_grad)
+        return {
+            "classical_encoder": encoder_params,
+            "quantum_circuit": quantum_params,
+            "classical_output_head": head_params,
+            "total_trainable": encoder_params + quantum_params + head_params,
+        }
+
+
+class StandardVQCClassifier(nn.Module):
+    """
+    End-to-end differentiable Hybrid Standard VQC Classifier (Single data encoding at t=0).
+
+    Architecture:
+        x (30 features)
+          -> Classical Feature Encoder (30 -> 4 angles in [-pi, pi])
+          -> 4-Qubit Standard VQC Circuit (Single E(x) followed by L variational layers)
+          -> 4 Pauli-Z expectation values in [-1, 1]
+          -> Classical Output Head (4 -> 1 logit)
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 30,
+        n_qubits: int = 4,
+        n_layers: int = 2,
+        encoder_hidden_dim: int = 16,
+    ) -> None:
+        """
+        Args:
+            input_dim: Number of input features (default 30).
+            n_qubits: Number of quantum wires / qubits (default 4).
+            n_layers: Number of variational entangling layers (default 2).
+            encoder_hidden_dim: Hidden dimension for classical encoder.
+        """
+        super().__init__()
+
+        self.input_dim = input_dim
+        self.n_qubits = n_qubits
+        self.n_layers = n_layers
+
+        # 1. Classical Feature Encoder: 30 -> 4 bounded angles
+        self.encoder = ClassicalFeatureEncoder(
+            input_dim=input_dim,
+            latent_dim=n_qubits,
+            hidden_dim=encoder_hidden_dim,
+        )
+
+        # 2. Standard VQC Circuit (single data encoding)
+        self.quantum_layer = StandardVQCLayer(
+            n_qubits=n_qubits,
+            n_layers=n_layers,
+        )
+
+        # 3. Classical Output Head
+        self.output_head = ClassicalOutputHead(in_features=n_qubits)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        angles = self.encoder(x)
+        expvals = self.quantum_layer(angles)
+        logits = self.output_head(expvals)
+        return logits
+
+    def encode_features(self, x: torch.Tensor) -> torch.Tensor:
+        return self.encoder(x)
+
+    def quantum_features(self, x: torch.Tensor) -> torch.Tensor:
+        angles = self.encoder(x)
+        return self.quantum_layer(angles)
+
+    def predict_proba(self, x: torch.Tensor) -> torch.Tensor:
+        self.eval()
+        with torch.no_grad():
+            logits = self.forward(x)
+            probs = torch.sigmoid(logits)
+        return probs
+
+    def predict(self, x: torch.Tensor, threshold: float = 0.5) -> torch.Tensor:
+        probs = self.predict_proba(x)
+        return (probs >= threshold).long()
+
+    @property
+    def parameter_breakdown(self) -> Dict[str, int]:
+        encoder_params = sum(p.numel() for p in self.encoder.parameters() if p.requires_grad)
+        quantum_params = sum(p.numel() for p in self.quantum_layer.parameters() if p.requires_grad)
+        head_params = sum(p.numel() for p in self.output_head.parameters() if p.requires_grad)
+        return {
+            "classical_encoder": encoder_params,
+            "quantum_circuit": quantum_params,
+            "classical_output_head": head_params,
+            "total_trainable": encoder_params + quantum_params + head_params,
+        }

@@ -1,0 +1,18 @@
+# Python virtual environment
+.venv/
+env/
+venv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest cache
+.pytest_cache/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -167,3 +167,38 @@ def test_hybrid_training_short_smoke_run():
         assert "malignant_sensitivity" in res["metrics"]["test_partition"]["metrics"]
         assert "malignant_specificity" in res["metrics"]["test_partition"]["metrics"]
         assert Path(res["checkpoint_path"]).exists()
+
+
+def test_standard_vqc_layer_and_classifier():
+    """Verify StandardVQCLayer single encoding at t=0 and end-to-end StandardVQCClassifier."""
+    from src.models.hybrid import StandardVQCClassifier
+    from src.models.quantum import StandardVQCLayer
+
+    # 1. Layer checks
+    vqc_layer = StandardVQCLayer(n_qubits=4, n_layers=3)
+    assert vqc_layer.weights_ry.shape == (3, 4)
+    assert vqc_layer.weights_rz.shape == (3, 4)
+    assert vqc_layer.num_parameters == 24
+    assert vqc_layer.circuit_info["estimated_circuit_depth"] == 1 + 3 * 3
+
+    x_angles = torch.randn(8, 4)
+    out_expvals = vqc_layer(x_angles)
+    assert out_expvals.shape == (8, 4)
+    assert out_expvals.min().item() >= -1.0 - 1e-5
+    assert out_expvals.max().item() <= 1.0 + 1e-5
+
+    # 2. Classifier checks
+    model = StandardVQCClassifier(input_dim=30, n_qubits=4, n_layers=2)
+    x_raw = torch.randn(8, 30)
+    y = torch.tensor([[1.0], [0.0], [1.0], [0.0], [1.0], [0.0], [1.0], [0.0]])
+
+    logits = model(x_raw)
+    assert logits.shape == (8, 1)
+
+    loss = nn.BCEWithLogitsLoss()(logits, y)
+    loss.backward()
+
+    assert model.encoder.net[0].weight.grad is not None
+    assert model.quantum_layer.weights_ry.grad is not None
+    assert model.output_head.linear.weight.grad is not None
+    assert torch.isfinite(model.quantum_layer.weights_ry.grad).all().item()

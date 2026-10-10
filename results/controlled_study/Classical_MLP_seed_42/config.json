@@ -1,0 +1,82 @@
+{
+  "model_name": "Classical_MLP",
+  "model_family": "classical",
+  "random_seed": 42,
+  "environment": {
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.6",
+    "torch_version": "2.14.1+cpu",
+    "pennylane_version": "0.45.1",
+    "sklearn_version": "1.9.1",
+    "numpy_version": "2.5.3"
+  },
+  "dataset": {
+    "name": "Breast Cancer Wisconsin Diagnostic",
+    "target_label_mapping": {
+      "0": "malignant",
+      "1": "benign"
+    },
+    "features_count": 30,
+    "sample_counts": {
+      "total": 569,
+      "train": 398,
+      "val": 85,
+      "test": 86
+    },
+    "class_distribution": {
+      "train": {
+        "malignant": 148,
+        "benign": 250
+      },
+      "val": {
+        "malignant": 32,
+        "benign": 53
+      },
+      "test": {
+        "malignant": 32,
+        "benign": 54
+      },
+      "total": {
+        "malignant": 212,
+        "benign": 357
+      }
+    },
+    "split_ratios": {
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15
+    }
+  },
+  "model_architecture": {
+    "family": "classical",
+    "parameters": {
+      "total_trainable": 4289,
+      "classical_parameters": 4289,
+      "quantum_parameters": 0
+    },
+    "circuit_info": {
+      "type": "None (Classical)"
+    },
+    "kwargs": {
+      "hidden_dims": [
+        64,
+        32
+      ],
+      "dropout_rate": 0.2,
+      "use_batch_norm": true
+    }
+  },
+  "training": {
+    "epochs_max": 60,
+    "epochs_trained": 55,
+    "best_epoch": 40,
+    "patience": 15,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "duration_seconds": 2.5856594999786466,
+    "loss_function": "BCEWithLogitsLoss",
+    "optimizer": "AdamW",
+    "device": "cpu"
+  }
+}

@@ -1,0 +1,483 @@
+{
+  "Classical_MLP": {
+    "model_family": "classical",
+    "num_runs": 3,
+    "seeds": [
+      123,
+      42,
+      999
+    ],
+    "parameters": {
+      "total_trainable": 4289,
+      "classical_parameters": 4289,
+      "quantum_parameters": 0
+    },
+    "circuit_info": {
+      "type": "None (Classical)"
+    },
+    "test_accuracy": {
+      "mean": 0.9806201550387597,
+      "std": 0.010962895832349542,
+      "values": [
+        0.9883720930232558,
+        0.9651162790697675,
+        0.9883720930232558
+      ]
+    },
+    "test_roc_auc": {
+      "mean": 0.9978780864197532,
+      "std": 0.0030008389633688166,
+      "values": [
+        1.0,
+        0.9936342592592593,
+        1.0
+      ]
+    },
+    "malignant_sensitivity": {
+      "mean": 0.9479166666666666,
+      "std": 0.02946278254943948,
+      "values": [
+        0.96875,
+        0.90625,
+        0.96875
+      ]
+    },
+    "malignant_specificity": {
+      "mean": 1.0,
+      "std": 0.0,
+      "values": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "benign_f1": {
+      "mean": 0.9848747830399208,
+      "std": 0.008415850606733022,
+      "values": [
+        0.9908256880733946,
+        0.972972972972973,
+        0.9908256880733946
+      ]
+    },
+    "duration_seconds": {
+      "mean": 2.170044199951614,
+      "std": 0.31123494843758687,
+      "values": [
+        1.8367425999604166,
+        2.5856594999786466,
+        2.0877304999157786
+      ]
+    },
+    "best_epoch": {
+      "mean": 31.666666666666668,
+      "std": 6.548960901462833,
+      "values": [
+        24,
+        40,
+        31
+      ]
+    },
+    "test_loss": {
+      "mean": 0.07204848776261012,
+      "std": 0.025100975969185185,
+      "values": [
+        0.05502824857831001,
+        0.10753678530454636,
+        0.053580429404973984
+      ]
+    }
+  },
+  "Hybrid_Reuploading_L1": {
+    "model_family": "hybrid_reuploading",
+    "num_runs": 3,
+    "seeds": [
+      123,
+      42,
+      999
+    ],
+    "parameters": {
+      "classical_encoder": 564,
+      "quantum_circuit": 8,
+      "classical_output_head": 5,
+      "total_trainable": 577
+    },
+    "circuit_info": {
+      "type": "DataReuploadingVQC",
+      "n_qubits": 4,
+      "n_layers": 1,
+      "num_parameters": 8,
+      "encoding_gates_per_layer": 4,
+      "trainable_gates_per_layer": 8,
+      "cnot_gates_per_layer": 4,
+      "total_gates": 16,
+      "estimated_circuit_depth": 4
+    },
+    "test_accuracy": {
+      "mean": 0.9534883720930232,
+      "std": 0.02511914999382891,
+      "values": [
+        0.9302325581395349,
+        0.9418604651162791,
+        0.9883720930232558
+      ]
+    },
+    "test_roc_auc": {
+      "mean": 0.9861111111111112,
+      "std": 0.010898492972087595,
+      "values": [
+        0.9849537037037037,
+        0.9733796296296297,
+        1.0
+      ]
+    },
+    "malignant_sensitivity": {
+      "mean": 0.9583333333333334,
+      "std": 0.01473139127471974,
+      "values": [
+        0.96875,
+        0.9375,
+        0.96875
+      ]
+    },
+    "malignant_specificity": {
+      "mean": 0.9506172839506174,
+      "std": 0.03805193828993194,
+      "values": [
+        0.9074074074074074,
+        0.9444444444444444,
+        1.0
+      ]
+    },
+    "benign_f1": {
+      "mean": 0.9621348028061568,
+      "std": 0.02077536771666284,
+      "values": [
+        0.9423076923076923,
+        0.9532710280373832,
+        0.9908256880733946
+      ]
+    },
+    "duration_seconds": {
+      "mean": 5.56064913328737,
+      "std": 0.7941886149590349,
+      "values": [
+        6.676101199933328,
+        5.116625999915414,
+        4.889220200013369
+      ]
+    },
+    "best_epoch": {
+      "mean": 19.0,
+      "std": 4.546060565661952,
+      "values": [
+        25,
+        18,
+        14
+      ]
+    },
+    "test_loss": {
+      "mean": 0.12469932685295741,
+      "std": 0.0654869665576902,
+      "values": [
+        0.14789821207523346,
+        0.19074763357639313,
+        0.035452134907245636
+      ]
+    }
+  },
+  "Hybrid_Reuploading_L2": {
+    "model_family": "hybrid_reuploading",
+    "num_runs": 3,
+    "seeds": [
+      123,
+      42,
+      999
+    ],
+    "parameters": {
+      "classical_encoder": 564,
+      "quantum_circuit": 16,
+      "classical_output_head": 5,
+      "total_trainable": 585
+    },
+    "circuit_info": {
+      "type": "DataReuploadingVQC",
+      "n_qubits": 4,
+      "n_layers": 2,
+      "num_parameters": 16,
+      "encoding_gates_per_layer": 4,
+      "trainable_gates_per_layer": 8,
+      "cnot_gates_per_layer": 4,
+      "total_gates": 32,
+      "estimated_circuit_depth": 8
+    },
+    "test_accuracy": {
+      "mean": 0.9844961240310077,
+      "std": 0.014502548010751688,
+      "values": [
+        0.9883720930232558,
+        0.9651162790697675,
+        1.0
+      ]
+    },
+    "test_roc_auc": {
+      "mean": 0.9978780864197532,
+      "std": 0.00260237993117899,
+      "values": [
+        0.9994212962962963,
+        0.994212962962963,
+        1.0
+      ]
+    },
+    "malignant_sensitivity": {
+      "mean": 0.96875,
+      "std": 0.04419417382415922,
+      "values": [
+        1.0,
+        0.90625,
+        1.0
+      ]
+    },
+    "malignant_specificity": {
+      "mean": 0.9938271604938271,
+      "std": 0.008729713347982055,
+      "values": [
+        0.9814814814814815,
+        1.0,
+        1.0
+      ]
+    },
+    "benign_f1": {
+      "mean": 0.9878757261934833,
+      "std": 0.011207289543578337,
+      "values": [
+        0.9906542056074766,
+        0.972972972972973,
+        1.0
+      ]
+    },
+    "duration_seconds": {
+      "mean": 7.40844039999259,
+      "std": 1.773923695512902,
+      "values": [
+        5.0700749000534415,
+        7.7907031999202445,
+        9.364543100004084
+      ]
+    },
+    "best_epoch": {
+      "mean": 17.333333333333332,
+      "std": 6.236095644623236,
+      "values": [
+        9,
+        19,
+        24
+      ]
+    },
+    "test_loss": {
+      "mean": 0.06728568548957507,
+      "std": 0.026276530494835606,
+      "values": [
+        0.061143238097429276,
+        0.10209626704454422,
+        0.03861755132675171
+      ]
+    }
+  },
+  "Hybrid_Reuploading_L4": {
+    "model_family": "hybrid_reuploading",
+    "num_runs": 3,
+    "seeds": [
+      123,
+      42,
+      999
+    ],
+    "parameters": {
+      "classical_encoder": 564,
+      "quantum_circuit": 32,
+      "classical_output_head": 5,
+      "total_trainable": 601
+    },
+    "circuit_info": {
+      "type": "DataReuploadingVQC",
+      "n_qubits": 4,
+      "n_layers": 4,
+      "num_parameters": 32,
+      "encoding_gates_per_layer": 4,
+      "trainable_gates_per_layer": 8,
+      "cnot_gates_per_layer": 4,
+      "total_gates": 64,
+      "estimated_circuit_depth": 16
+    },
+    "test_accuracy": {
+      "mean": 0.9767441860465116,
+      "std": 0.018988292579714548,
+      "values": [
+        0.9534883720930233,
+        0.9767441860465116,
+        1.0
+      ]
+    },
+    "test_roc_auc": {
+      "mean": 0.9945987654320988,
+      "std": 0.005715868977634691,
+      "values": [
+        0.9971064814814815,
+        0.9866898148148148,
+        1.0
+      ]
+    },
+    "malignant_sensitivity": {
+      "mean": 0.9791666666666666,
+      "std": 0.01473139127471974,
+      "values": [
+        0.96875,
+        0.96875,
+        1.0
+      ]
+    },
+    "malignant_specificity": {
+      "mean": 0.9753086419753086,
+      "std": 0.023096650535641628,
+      "values": [
+        0.9444444444444444,
+        0.9814814814814815,
+        1.0
+      ]
+    },
+    "benign_f1": {
+      "mean": 0.9812485441416259,
+      "std": 0.01540647636242456,
+      "values": [
+        0.9622641509433962,
+        0.9814814814814815,
+        1.0
+      ]
+    },
+    "duration_seconds": {
+      "mean": 14.919872333334448,
+      "std": 1.2888557025337886,
+      "values": [
+        15.792804699973203,
+        15.869124499964528,
+        13.097687800065614
+      ]
+    },
+    "best_epoch": {
+      "mean": 20.666666666666668,
+      "std": 2.6246692913372702,
+      "values": [
+        22,
+        23,
+        17
+      ]
+    },
+    "test_loss": {
+      "mean": 0.08227908611297607,
+      "std": 0.03465298646895661,
+      "values": [
+        0.10248079895973206,
+        0.11084555834531784,
+        0.033510901033878326
+      ]
+    }
+  },
+  "Standard_VQC_L2": {
+    "model_family": "standard_vqc",
+    "num_runs": 3,
+    "seeds": [
+      123,
+      42,
+      999
+    ],
+    "parameters": {
+      "classical_encoder": 564,
+      "quantum_circuit": 16,
+      "classical_output_head": 5,
+      "total_trainable": 585
+    },
+    "circuit_info": {
+      "type": "StandardVQC",
+      "n_qubits": 4,
+      "n_layers": 2,
+      "num_parameters": 16,
+      "encoding_gates_total": 4,
+      "trainable_gates_total": 16,
+      "cnot_gates_total": 8,
+      "total_gates": 28,
+      "estimated_circuit_depth": 7
+    },
+    "test_accuracy": {
+      "mean": 0.9689922480620154,
+      "std": 0.014502548010751688,
+      "values": [
+        0.9883720930232558,
+        0.9534883720930233,
+        0.9651162790697675
+      ]
+    },
+    "test_roc_auc": {
+      "mean": 0.9934413580246914,
+      "std": 0.006415235010924338,
+      "values": [
+        0.9982638888888888,
+        0.984375,
+        0.9976851851851852
+      ]
+    },
+    "malignant_sensitivity": {
+      "mean": 0.9479166666666666,
+      "std": 0.01473139127471974,
+      "values": [
+        0.96875,
+        0.9375,
+        0.9375
+      ]
+    },
+    "malignant_specificity": {
+      "mean": 0.9814814814814814,
+      "std": 0.01512030705421717,
+      "values": [
+        1.0,
+        0.9629629629629629,
+        0.9814814814814815
+      ]
+    },
+    "benign_f1": {
+      "mean": 0.9754219050855136,
+      "std": 0.01156393613600658,
+      "values": [
+        0.9908256880733946,
+        0.9629629629629629,
+        0.9724770642201835
+      ]
+    },
+    "duration_seconds": {
+      "mean": 5.708122633358774,
+      "std": 1.1695473164590433,
+      "values": [
+        4.556428200099617,
+        7.312056099995971,
+        5.255883599980734
+      ]
+    },
+    "best_epoch": {
+      "mean": 13.333333333333334,
+      "std": 4.189935029992178,
+      "values": [
+        9,
+        19,
+        12
+      ]
+    },
+    "test_loss": {
+      "mean": 0.101976844171683,
+      "std": 0.04078941057738498,
+      "values": [
+        0.07738865166902542,
+        0.15946197509765625,
+        0.06907990574836731
+      ]
+    }
+  }
+}
