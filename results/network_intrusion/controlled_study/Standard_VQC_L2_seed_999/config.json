@@ -1,0 +1,107 @@
+{
+  "model_family": "standard_vqc",
+  "model_name": "Standard_VQC_L2",
+  "seed": 999,
+  "model": {
+    "input_dim": 63,
+    "n_layers": 2,
+    "encoder_hidden_dim": 16
+  },
+  "training": {
+    "batch_size": 64,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "epochs": 30,
+    "patience": 8,
+    "epochs_trained": 30,
+    "best_epoch": 29,
+    "duration_seconds": 157.1823903000004
+  },
+  "circuit_metadata": {
+    "type": "StandardVQC",
+    "n_qubits": 4,
+    "n_layers": 2,
+    "num_parameters": 16,
+    "encoding_gates_total": 4,
+    "trainable_gates_total": 16,
+    "cnot_gates_total": 8,
+    "total_gates": 28,
+    "estimated_circuit_depth": 7
+  },
+  "parameter_breakdown": {
+    "classical_encoder": 1092,
+    "quantum_circuit": 16,
+    "classical_output_head": 5,
+    "total_trainable": 1113
+  },
+  "dataset_metadata": {
+    "dataset_name": "UNSW-NB15",
+    "provenance": "Australian Centre for Cyber Security (ACCS), UNSW Canberra. Authors: Nour Moustafa and Jill Slay (2015).",
+    "source_file": "data/raw/UNSW_NB15_training-set.csv",
+    "sample_size": 6000,
+    "deduplicated": false,
+    "random_seed": 999,
+    "input_feature_count_raw": 42,
+    "encoded_feature_dim": 63,
+    "categorical_columns": [
+      "proto",
+      "service",
+      "state"
+    ],
+    "numerical_columns": [
+      "dur",
+      "spkts",
+      "dpkts",
+      "sbytes",
+      "dbytes",
+      "rate",
+      "sttl",
+      "dttl",
+      "sload",
+      "dload",
+      "sloss",
+      "dloss",
+      "sinpkt",
+      "dinpkt",
+      "sjit",
+      "djit",
+      "swin",
+      "stcpb",
+      "dtcpb",
+      "dwin",
+      "tcprtt",
+      "synack",
+      "ackdat",
+      "smean",
+      "dmean",
+      "trans_depth",
+      "response_body_len",
+      "ct_srv_src",
+      "ct_state_ttl",
+      "ct_dst_ltm",
+      "ct_src_dport_ltm",
+      "ct_dst_sport_ltm",
+      "ct_dst_src_ltm",
+      "is_ftp_login",
+      "ct_ftp_cmd",
+      "ct_flw_http_mthd",
+      "ct_src_ltm",
+      "ct_srv_dst",
+      "is_sm_ips_ports"
+    ],
+    "target_mapping": {
+      "0": "BENIGN",
+      "1": "ATTACK"
+    },
+    "positive_class": "ATTACK (1)",
+    "negative_class": "BENIGN (0)"
+  },
+  "environment": {
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.6",
+    "torch_version": "2.14.1+cpu",
+    "pennylane_version": "0.45.1",
+    "sklearn_version": "1.9.1",
+    "numpy_version": "2.5.3"
+  }
+}

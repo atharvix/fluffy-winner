@@ -1,0 +1,169 @@
+/* Four Site-Wide Themes for Q-NIDS Research Workstation (Strictly NO Gradients) */
+
+/* 1. Theme A — Light Research */
+[data-theme="light-research"] {
+  --bg-page: #f8f9fa;
+  --bg-surface-1: #ffffff;
+  --bg-surface-2: #f1f3f5;
+  --bg-surface-3: #e9ecef;
+  --bg-input: #ffffff;
+  --bg-code: #f1f3f5;
+
+  --border-subtle: #e5e7eb;
+  --border-default: #d1d5db;
+  --border-strong: #9ca3af;
+  --border-focus: #1d4ed8;
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-inverse: #ffffff;
+
+  --accent-primary: #1d4ed8;
+  --accent-primary-hover: #1e40af;
+  --accent-secondary: #475569;
+  
+  --status-attack: #b91c1c;
+  --status-attack-bg: #fee2e2;
+  --status-attack-border: #f87171;
+
+  --status-benign: #047857;
+  --status-benign-bg: #d1fae5;
+  --status-benign-border: #34d399;
+
+  --status-warn: #b45309;
+  --status-warn-bg: #fef3c7;
+  --status-warn-border: #fcd34d;
+
+  --status-info: #1d4ed8;
+  --status-info-bg: #dbeafe;
+  --status-info-border: #93c5fd;
+
+  --grid-line: rgba(0, 0, 0, 0.04);
+}
+
+/* 2. Theme B — Dark Research (Default) */
+[data-theme="dark-research"] {
+  --bg-page: #101216;
+  --bg-surface-1: #171a1f;
+  --bg-surface-2: #1f232b;
+  --bg-surface-3: #282d37;
+  --bg-input: #14171d;
+  --bg-code: #0b0d10;
+
+  --border-subtle: #232730;
+  --border-default: #2d333f;
+  --border-strong: #3f4757;
+  --border-focus: #3b82f6;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #808e9b;
+  --text-inverse: #0f172a;
+
+  --accent-primary: #3b82f6;
+  --accent-primary-hover: #60a5fa;
+  --accent-secondary: #64748b;
+
+  --status-attack: #ef4444;
+  --status-attack-bg: #2d1515;
+  --status-attack-border: #7f1d1d;
+
+  --status-benign: #10b981;
+  --status-benign-bg: #0f291e;
+  --status-benign-border: #065f46;
+
+  --status-warn: #f59e0b;
+  --status-warn-bg: #2b1f0c;
+  --status-warn-border: #78350f;
+
+  --status-info: #3b82f6;
+  --status-info-bg: #13243d;
+  --status-info-border: #1e3a8a;
+
+  --grid-line: rgba(255, 255, 255, 0.03);
+}
+
+/* 3. Theme C — High Contrast (Strict WCAG 2.2 AA) */
+[data-theme="high-contrast"] {
+  --bg-page: #000000;
+  --bg-surface-1: #0a0a0a;
+  --bg-surface-2: #141414;
+  --bg-surface-3: #222222;
+  --bg-input: #000000;
+  --bg-code: #050505;
+
+  --border-subtle: #555555;
+  --border-default: #ffffff;
+  --border-strong: #ffffff;
+  --border-focus: #ffff00;
+
+  --text-primary: #ffffff;
+  --text-secondary: #f0f0f0;
+  --text-muted: #d0d0d0;
+  --text-inverse: #000000;
+
+  --accent-primary: #38bdf8;
+  --accent-primary-hover: #7dd3fc;
+  --accent-secondary: #e2e8f0;
+
+  --status-attack: #ff3333;
+  --status-attack-bg: #2a0000;
+  --status-attack-border: #ffffff;
+
+  --status-benign: #00ff88;
+  --status-benign-bg: #002614;
+  --status-benign-border: #ffffff;
+
+  --status-warn: #ffff00;
+  --status-warn-bg: #2a2a00;
+  --status-warn-border: #ffffff;
+
+  --status-info: #00ccff;
+  --status-info-bg: #002030;
+  --status-info-border: #ffffff;
+
+  --grid-line: rgba(255, 255, 255, 0.1);
+}
+
+/* 4. Theme D — Cyberpunk (Flat Electric Accents, NO Gradients, High Legibility) */
+[data-theme="cyberpunk"] {
+  --bg-page: #08090d;
+  --bg-surface-1: #0f1118;
+  --bg-surface-2: #161924;
+  --bg-surface-3: #1f2333;
+  --bg-input: #0b0d13;
+  --bg-code: #050608;
+
+  --border-subtle: #1e2233;
+  --border-default: #2a3048;
+  --border-strong: #00e5ff;
+  --border-focus: #00e5ff;
+
+  --text-primary: #e6edf3;
+  --text-secondary: #9aa5b8;
+  --text-muted: #6e7687;
+  --text-inverse: #08090d;
+
+  --accent-primary: #00e5ff;
+  --accent-primary-hover: #66efff;
+  --accent-secondary: #ff007f;
+
+  --status-attack: #ff0055;
+  --status-attack-bg: #260511;
+  --status-attack-border: #80002b;
+
+  --status-benign: #00e5a3;
+  --status-benign-bg: #032118;
+  --status-benign-border: #00805b;
+
+  --status-warn: #ffb703;
+  --status-warn-bg: #261b02;
+  --status-warn-border: #805c02;
+
+  --status-info: #00e5ff;
+  --status-info-bg: #042226;
+  --status-info-border: #007380;
+
+  --grid-line: rgba(0, 229, 255, 0.04);
+}

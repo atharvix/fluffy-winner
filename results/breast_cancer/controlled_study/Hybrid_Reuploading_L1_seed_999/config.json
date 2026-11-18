@@ -1,0 +1,87 @@
+{
+  "model_name": "Hybrid_Reuploading_L1",
+  "model_family": "hybrid_reuploading",
+  "random_seed": 999,
+  "environment": {
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.6",
+    "torch_version": "2.14.1+cpu",
+    "pennylane_version": "0.45.1",
+    "sklearn_version": "1.9.1",
+    "numpy_version": "2.5.3"
+  },
+  "dataset": {
+    "name": "Breast Cancer Wisconsin Diagnostic",
+    "target_label_mapping": {
+      "0": "malignant",
+      "1": "benign"
+    },
+    "features_count": 30,
+    "sample_counts": {
+      "total": 569,
+      "train": 398,
+      "val": 85,
+      "test": 86
+    },
+    "class_distribution": {
+      "train": {
+        "malignant": 148,
+        "benign": 250
+      },
+      "val": {
+        "malignant": 32,
+        "benign": 53
+      },
+      "test": {
+        "malignant": 32,
+        "benign": 54
+      },
+      "total": {
+        "malignant": 212,
+        "benign": 357
+      }
+    },
+    "split_ratios": {
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15
+    }
+  },
+  "model_architecture": {
+    "family": "hybrid_reuploading",
+    "parameters": {
+      "classical_encoder": 564,
+      "quantum_circuit": 8,
+      "classical_output_head": 5,
+      "total_trainable": 577
+    },
+    "circuit_info": {
+      "type": "DataReuploadingVQC",
+      "n_qubits": 4,
+      "n_layers": 1,
+      "num_parameters": 8,
+      "encoding_gates_per_layer": 4,
+      "trainable_gates_per_layer": 8,
+      "cnot_gates_per_layer": 4,
+      "total_gates": 16,
+      "estimated_circuit_depth": 4
+    },
+    "kwargs": {
+      "n_layers": 1,
+      "encoder_hidden_dim": 16
+    }
+  },
+  "training": {
+    "epochs_max": 35,
+    "epochs_trained": 24,
+    "best_epoch": 14,
+    "patience": 10,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "duration_seconds": 4.889220200013369,
+    "loss_function": "BCEWithLogitsLoss",
+    "optimizer": "AdamW",
+    "device": "cpu"
+  }
+}

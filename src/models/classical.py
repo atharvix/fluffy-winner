@@ -94,3 +94,16 @@ class ClassicalMLP(nn.Module):
         """Compute binary class predictions given threshold."""
         probs = self.predict_proba(x)
         return (probs >= threshold).long()
+
+    @property
+    def parameter_breakdown(self) -> dict:
+        """Detailed breakdown of trainable parameters."""
+        extractor_params = sum(p.numel() for p in self.feature_extractor.parameters() if p.requires_grad)
+        output_params = sum(p.numel() for p in self.output_layer.parameters() if p.requires_grad)
+        return {
+            "feature_extractor": extractor_params,
+            "output_layer": output_params,
+            "quantum_circuit": 0,
+            "total_trainable": extractor_params + output_params,
+        }
+

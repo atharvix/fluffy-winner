@@ -1,0 +1,136 @@
+{
+  "model_name": "Standard_VQC_L2",
+  "random_seed": 123,
+  "best_epoch": 9,
+  "best_val_loss": 0.053208984434604645,
+  "duration_seconds": 4.556428200099617,
+  "training_partition": {
+    "loss": 0.05675538256764412,
+    "metrics": {
+      "accuracy": 0.992462311557789,
+      "precision": 0.9881422924901185,
+      "recall": 1.0,
+      "f1": 0.9940357852882704,
+      "roc_auc": 0.9962972972972973,
+      "malignant_sensitivity": 0.9797297297297297,
+      "malignant_specificity": 1.0,
+      "malignant_metrics": {
+        "sensitivity": 0.9797297297297297,
+        "specificity": 1.0,
+        "precision": 1.0,
+        "recall": 0.9797297297297297,
+        "f1": 0.9897610921501706
+      },
+      "benign_metrics": {
+        "precision": 0.9881422924901185,
+        "recall": 1.0,
+        "specificity": 0.9797297297297297,
+        "f1": 0.9940357852882704
+      },
+      "confusion_matrix": {
+        "raw_matrix": [
+          [
+            145,
+            3
+          ],
+          [
+            0,
+            250
+          ]
+        ],
+        "true_malignant_pred_malignant": 145,
+        "true_malignant_pred_benign": 3,
+        "true_benign_pred_malignant": 0,
+        "true_benign_pred_benign": 250
+      },
+      "decision_threshold": 0.5,
+      "sample_count": 398
+    }
+  },
+  "validation_partition": {
+    "loss": 0.053208984434604645,
+    "metrics": {
+      "accuracy": 0.9882352941176471,
+      "precision": 0.9814814814814815,
+      "recall": 1.0,
+      "f1": 0.9906542056074766,
+      "roc_auc": 1.0,
+      "malignant_sensitivity": 0.96875,
+      "malignant_specificity": 1.0,
+      "malignant_metrics": {
+        "sensitivity": 0.96875,
+        "specificity": 1.0,
+        "precision": 1.0,
+        "recall": 0.96875,
+        "f1": 0.9841269841269841
+      },
+      "benign_metrics": {
+        "precision": 0.9814814814814815,
+        "recall": 1.0,
+        "specificity": 0.96875,
+        "f1": 0.9906542056074766
+      },
+      "confusion_matrix": {
+        "raw_matrix": [
+          [
+            31,
+            1
+          ],
+          [
+            0,
+            53
+          ]
+        ],
+        "true_malignant_pred_malignant": 31,
+        "true_malignant_pred_benign": 1,
+        "true_benign_pred_malignant": 0,
+        "true_benign_pred_benign": 53
+      },
+      "decision_threshold": 0.5,
+      "sample_count": 85
+    }
+  },
+  "test_partition": {
+    "loss": 0.07738865166902542,
+    "metrics": {
+      "accuracy": 0.9883720930232558,
+      "precision": 0.9818181818181818,
+      "recall": 1.0,
+      "f1": 0.9908256880733946,
+      "roc_auc": 0.9982638888888888,
+      "malignant_sensitivity": 0.96875,
+      "malignant_specificity": 1.0,
+      "malignant_metrics": {
+        "sensitivity": 0.96875,
+        "specificity": 1.0,
+        "precision": 1.0,
+        "recall": 0.96875,
+        "f1": 0.9841269841269841
+      },
+      "benign_metrics": {
+        "precision": 0.9818181818181818,
+        "recall": 1.0,
+        "specificity": 0.96875,
+        "f1": 0.9908256880733946
+      },
+      "confusion_matrix": {
+        "raw_matrix": [
+          [
+            31,
+            1
+          ],
+          [
+            0,
+            54
+          ]
+        ],
+        "true_malignant_pred_malignant": 31,
+        "true_malignant_pred_benign": 1,
+        "true_benign_pred_malignant": 0,
+        "true_benign_pred_benign": 54
+      },
+      "decision_threshold": 0.5,
+      "sample_count": 86
+    }
+  }
+}

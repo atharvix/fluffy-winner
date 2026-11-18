@@ -1,0 +1,87 @@
+{
+  "model_name": "Standard_VQC_L2",
+  "model_family": "standard_vqc",
+  "random_seed": 42,
+  "environment": {
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.6",
+    "torch_version": "2.14.1+cpu",
+    "pennylane_version": "0.45.1",
+    "sklearn_version": "1.9.1",
+    "numpy_version": "2.5.3"
+  },
+  "dataset": {
+    "name": "Breast Cancer Wisconsin Diagnostic",
+    "target_label_mapping": {
+      "0": "malignant",
+      "1": "benign"
+    },
+    "features_count": 30,
+    "sample_counts": {
+      "total": 569,
+      "train": 398,
+      "val": 85,
+      "test": 86
+    },
+    "class_distribution": {
+      "train": {
+        "malignant": 148,
+        "benign": 250
+      },
+      "val": {
+        "malignant": 32,
+        "benign": 53
+      },
+      "test": {
+        "malignant": 32,
+        "benign": 54
+      },
+      "total": {
+        "malignant": 212,
+        "benign": 357
+      }
+    },
+    "split_ratios": {
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15
+    }
+  },
+  "model_architecture": {
+    "family": "standard_vqc",
+    "parameters": {
+      "classical_encoder": 564,
+      "quantum_circuit": 16,
+      "classical_output_head": 5,
+      "total_trainable": 585
+    },
+    "circuit_info": {
+      "type": "StandardVQC",
+      "n_qubits": 4,
+      "n_layers": 2,
+      "num_parameters": 16,
+      "encoding_gates_total": 4,
+      "trainable_gates_total": 16,
+      "cnot_gates_total": 8,
+      "total_gates": 28,
+      "estimated_circuit_depth": 7
+    },
+    "kwargs": {
+      "n_layers": 2,
+      "encoder_hidden_dim": 16
+    }
+  },
+  "training": {
+    "epochs_max": 35,
+    "epochs_trained": 29,
+    "best_epoch": 19,
+    "patience": 10,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "duration_seconds": 7.312056099995971,
+    "loss_function": "BCEWithLogitsLoss",
+    "optimizer": "AdamW",
+    "device": "cpu"
+  }
+}
