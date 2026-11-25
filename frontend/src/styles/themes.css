@@ -1,167 +1,180 @@
-/* Four Site-Wide Themes for Q-NIDS Research Workstation (Strictly NO Gradients) */
+/* Four Engineered Instrument Themes for Q-NIDS Research Workstation (Strictly NO Gradients) */
 
-/* 1. Theme A — Light Research */
+/* 1. Theme A — Light Archival Blueprint / Paper Mode */
 [data-theme="light-research"] {
-  --bg-page: #f8f9fa;
-  --bg-surface-1: #ffffff;
-  --bg-surface-2: #f1f3f5;
-  --bg-surface-3: #e9ecef;
-  --bg-input: #ffffff;
-  --bg-code: #f1f3f5;
+  --bg-page: #F5F4EF;
+  --bg-surface-1: #FFFFFF;
+  --bg-surface-2: #EBE8DF;
+  --bg-surface-3: #DFDCD0;
+  --bg-input: #FFFFFF;
+  --bg-code: #ECEAE2;
 
-  --border-subtle: #e5e7eb;
-  --border-default: #d1d5db;
-  --border-strong: #9ca3af;
-  --border-focus: #1d4ed8;
+  --border-subtle: #E2DFD5;
+  --border-default: #D1CDC2;
+  --border-strong: #969185;
+  --border-focus: #C87A14;
 
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
-  --text-inverse: #ffffff;
+  --text-primary: #1C1D20;
+  --text-secondary: #525660;
+  --text-muted: #7E838F;
+  --text-inverse: #FFFFFF;
 
-  --accent-primary: #1d4ed8;
-  --accent-primary-hover: #1e40af;
-  --accent-secondary: #475569;
-  
-  --status-attack: #b91c1c;
-  --status-attack-bg: #fee2e2;
-  --status-attack-border: #f87171;
+  --accent-primary: #C87A14;
+  --accent-primary-hover: #A3600C;
+  --accent-secondary: #1C1D20;
+  --accent-quantum: #0284C7;
+  --accent-quantum-bg: #E0F2FE;
+  --accent-quantum-border: #38BDF8;
 
-  --status-benign: #047857;
-  --status-benign-bg: #d1fae5;
-  --status-benign-border: #34d399;
+  --status-attack: #DC2626;
+  --status-attack-bg: #FEF2F2;
+  --status-attack-border: #F87171;
 
-  --status-warn: #b45309;
-  --status-warn-bg: #fef3c7;
-  --status-warn-border: #fcd34d;
+  --status-benign: #15803D;
+  --status-benign-bg: #F0FDF4;
+  --status-benign-border: #4ADE80;
 
-  --status-info: #1d4ed8;
-  --status-info-bg: #dbeafe;
-  --status-info-border: #93c5fd;
+  --status-warn: #C87A14;
+  --status-warn-bg: #FFFBEB;
+  --status-warn-border: #FCD34D;
 
-  --grid-line: rgba(0, 0, 0, 0.04);
+  --status-info: #0284C7;
+  --status-info-bg: #E0F2FE;
+  --status-info-border: #7DD3FC;
+
+  --grid-line: rgba(0, 0, 0, 0.05);
 }
 
-/* 2. Theme B — Dark Research (Default) */
+/* 2. Theme B — Dark Bench Graphite (Anodized Aluminum & Matte Graphite SOC Instrument - Default) */
 [data-theme="dark-research"] {
-  --bg-page: #101216;
-  --bg-surface-1: #171a1f;
-  --bg-surface-2: #1f232b;
-  --bg-surface-3: #282d37;
-  --bg-input: #14171d;
-  --bg-code: #0b0d10;
+  --bg-page: #0D0E10;         /* Anodized bench canvas */
+  --bg-surface-1: #141619;     /* Recessed instrument panel */
+  --bg-surface-2: #1C1F24;     /* Active control surface */
+  --bg-surface-3: #242830;     /* Elevated control state */
+  --bg-input: #101215;         /* Monospace register input background */
+  --bg-code: #090A0C;          /* Deep telemetry readout background */
 
-  --border-subtle: #232730;
-  --border-default: #2d333f;
-  --border-strong: #3f4757;
-  --border-focus: #3b82f6;
+  --border-subtle: #1F2228;
+  --border-default: #2A2E35;    /* Crisp 1px structural hairline rule */
+  --border-strong: #3E444E;     /* Active divider / bezel border */
+  --border-focus: #E59A24;      /* Signal Amber focus state */
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #808e9b;
-  --text-inverse: #0f172a;
+  --text-primary: #ECEAE4;      /* Warm off-white technical ink */
+  --text-secondary: #8A8F98;    /* Muted technical label ink */
+  --text-muted: #636872;        /* Hardware sub-label / index ink */
+  --text-inverse: #0D0E10;      /* Dark text for amber/ivory badges */
 
-  --accent-primary: #3b82f6;
-  --accent-primary-hover: #60a5fa;
-  --accent-secondary: #64748b;
+  /* Utilitarian Semantics */
+  --accent-primary: #E59A24;    /* Signal Amber */
+  --accent-primary-hover: #F59E0B;
+  --accent-secondary: #ECEAE4;
+  --accent-quantum: #38BDF8;    /* Scope Cyan for statevectors & bloch */
+  --accent-quantum-bg: #0C2330;
+  --accent-quantum-border: #0284C7;
 
-  --status-attack: #ef4444;
-  --status-attack-bg: #2d1515;
-  --status-attack-border: #7f1d1d;
+  --status-attack: #EF4444;     /* Alarm Vermilion alert */
+  --status-attack-bg: #270D0D;
+  --status-attack-border: #991B1B;
 
-  --status-benign: #10b981;
-  --status-benign-bg: #0f291e;
-  --status-benign-border: #065f46;
+  --status-benign: #22C55E;     /* Phosphor Green healthy */
+  --status-benign-bg: #072418;
+  --status-benign-border: #166534;
 
-  --status-warn: #f59e0b;
-  --status-warn-bg: #2b1f0c;
-  --status-warn-border: #78350f;
+  --status-warn: #E59A24;       /* Signal Amber */
+  --status-warn-bg: #271A06;
+  --status-warn-border: #854D0E;
 
-  --status-info: #3b82f6;
-  --status-info-bg: #13243d;
-  --status-info-border: #1e3a8a;
+  --status-info: #38BDF8;       /* Scope Cyan */
+  --status-info-bg: #0C2330;
+  --status-info-border: #0284C7;
 
-  --grid-line: rgba(255, 255, 255, 0.03);
+  --grid-line: rgba(255, 255, 255, 0.04);
 }
 
-/* 3. Theme C — High Contrast (Strict WCAG 2.2 AA) */
+/* 3. Theme C — High Contrast (Strict WCAG 2.2 AAA Bench Instrument) */
 [data-theme="high-contrast"] {
   --bg-page: #000000;
-  --bg-surface-1: #0a0a0a;
+  --bg-surface-1: #0A0A0A;
   --bg-surface-2: #141414;
   --bg-surface-3: #222222;
   --bg-input: #000000;
   --bg-code: #050505;
 
-  --border-subtle: #555555;
-  --border-default: #ffffff;
-  --border-strong: #ffffff;
-  --border-focus: #ffff00;
+  --border-subtle: #444444;
+  --border-default: #FFFFFF;
+  --border-strong: #FFFFFF;
+  --border-focus: #FFFF00;
 
-  --text-primary: #ffffff;
-  --text-secondary: #f0f0f0;
-  --text-muted: #d0d0d0;
+  --text-primary: #FFFFFF;
+  --text-secondary: #F0F0F0;
+  --text-muted: #D0D0D0;
   --text-inverse: #000000;
 
-  --accent-primary: #38bdf8;
-  --accent-primary-hover: #7dd3fc;
-  --accent-secondary: #e2e8f0;
+  --accent-primary: #E59A24;
+  --accent-primary-hover: #FCD34D;
+  --accent-secondary: #FFFFFF;
+  --accent-quantum: #00E5FF;
+  --accent-quantum-bg: #00222A;
+  --accent-quantum-border: #FFFFFF;
 
-  --status-attack: #ff3333;
-  --status-attack-bg: #2a0000;
-  --status-attack-border: #ffffff;
+  --status-attack: #FF3333;
+  --status-attack-bg: #2A0000;
+  --status-attack-border: #FFFFFF;
 
-  --status-benign: #00ff88;
+  --status-benign: #00FF88;
   --status-benign-bg: #002614;
-  --status-benign-border: #ffffff;
+  --status-benign-border: #FFFFFF;
 
-  --status-warn: #ffff00;
-  --status-warn-bg: #2a2a00;
-  --status-warn-border: #ffffff;
+  --status-warn: #FFFF00;
+  --status-warn-bg: #2A2A00;
+  --status-warn-border: #FFFFFF;
 
-  --status-info: #00ccff;
+  --status-info: #00E5FF;
   --status-info-bg: #002030;
-  --status-info-border: #ffffff;
+  --status-info-border: #FFFFFF;
 
   --grid-line: rgba(255, 255, 255, 0.1);
 }
 
-/* 4. Theme D — Cyberpunk (Flat Electric Accents, NO Gradients, High Legibility) */
+/* 4. Theme D — Tactical Wireframe (Phosphor Scope Wireframe) */
 [data-theme="cyberpunk"] {
-  --bg-page: #08090d;
-  --bg-surface-1: #0f1118;
-  --bg-surface-2: #161924;
-  --bg-surface-3: #1f2333;
-  --bg-input: #0b0d13;
-  --bg-code: #050608;
+  --bg-page: #050507;
+  --bg-surface-1: #0D0D12;
+  --bg-surface-2: #14141D;
+  --bg-surface-3: #1D1D2B;
+  --bg-input: #0A0A0F;
+  --bg-code: #040406;
 
-  --border-subtle: #1e2233;
-  --border-default: #2a3048;
-  --border-strong: #00e5ff;
-  --border-focus: #00e5ff;
+  --border-subtle: #1C1C28;
+  --border-default: #28283A;
+  --border-strong: #00E5FF;
+  --border-focus: #E59A24;
 
-  --text-primary: #e6edf3;
-  --text-secondary: #9aa5b8;
-  --text-muted: #6e7687;
-  --text-inverse: #08090d;
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --text-inverse: #050507;
 
-  --accent-primary: #00e5ff;
-  --accent-primary-hover: #66efff;
-  --accent-secondary: #ff007f;
+  --accent-primary: #E59A24;
+  --accent-primary-hover: #FBBF24;
+  --accent-secondary: #00E5FF;
+  --accent-quantum: #00E5FF;
+  --accent-quantum-bg: #022026;
+  --accent-quantum-border: #00E5FF;
 
-  --status-attack: #ff0055;
+  --status-attack: #FF0055;
   --status-attack-bg: #260511;
-  --status-attack-border: #80002b;
+  --status-attack-border: #80002B;
 
-  --status-benign: #00e5a3;
+  --status-benign: #00E5A3;
   --status-benign-bg: #032118;
-  --status-benign-border: #00805b;
+  --status-benign-border: #00805B;
 
-  --status-warn: #ffb703;
-  --status-warn-bg: #261b02;
-  --status-warn-border: #805c02;
+  --status-warn: #FFB703;
+  --status-warn-bg: #261B02;
+  --status-warn-border: #805C02;
 
-  --status-info: #00e5ff;
+  --status-info: #00E5FF;
   --status-info-bg: #042226;
   --status-info-border: #007380;
 

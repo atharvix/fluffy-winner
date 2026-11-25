@@ -4,7 +4,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from src.models.classical import ClassicalMLP
+from src.models.classical import ClassicalBottleneckMLP, ClassicalMLP
 
 
 def test_model_hidden_layers_requirement():
@@ -53,3 +53,39 @@ def test_model_forward_pass_and_predictions():
     unique_preds = torch.unique(preds).tolist()
     for p in unique_preds:
         assert p in [0, 1]
+
+
+def test_classical_bottleneck_mlp():
+    """Verify ClassicalBottleneckMLP architecture, parameter count, and bounded latent features."""
+    input_dim = 63
+    model = ClassicalBottleneckMLP(input_dim=input_dim, hidden_dim=16, latent_dim=4)
+    model.eval()
+
+    # Exact parameter breakdown check: 1,024 + 68 + 5 = 1,097
+    breakdown = model.parameter_breakdown
+    assert breakdown["classical_encoder"] == 1092
+    assert breakdown["quantum_circuit"] == 0
+    assert breakdown["classical_output_head"] == 5
+    assert breakdown["total_trainable"] == 1097
+
+    x = torch.randn(10, input_dim)
+
+    # Test encode_features bounded in [-pi, pi]
+    latent = model.encode_features(x)
+    assert latent.shape == (10, 4)
+    assert torch.all(latent >= -torch.pi - 1e-5)
+    assert torch.all(latent <= torch.pi + 1e-5)
+
+    # Test forward pass logits
+    logits = model(x)
+    assert logits.shape == (10, 1)
+
+    # Test predict_proba and predict
+    probs = model.predict_proba(x)
+    assert probs.shape == (10, 1)
+    assert torch.all(probs >= 0.0)
+    assert torch.all(probs <= 1.0)
+
+    preds = model.predict(x, threshold=0.5)
+    assert preds.shape == (10, 1)
+    assert set(torch.unique(preds).tolist()).issubset({0, 1})

@@ -1,0 +1,102 @@
+{
+  "model_family": "classical_bottleneck",
+  "model_name": "Classical_Bottleneck_MLP",
+  "seed": 999,
+  "decision_threshold": 0.3763,
+  "model": {
+    "input_dim": 66,
+    "hidden_dim": 16,
+    "latent_dim": 4
+  },
+  "training": {
+    "batch_size": 256,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "epochs": 30,
+    "patience": 6,
+    "epochs_trained": 30,
+    "best_epoch": 30,
+    "duration_seconds": 16.83299610001268,
+    "decision_threshold": 0.3763
+  },
+  "circuit_metadata": {
+    "type": "None (Classical Bottleneck)"
+  },
+  "parameter_breakdown": {
+    "classical_encoder": 1140,
+    "quantum_circuit": 0,
+    "classical_output_head": 5,
+    "total_trainable": 1145
+  },
+  "dataset_metadata": {
+    "dataset_name": "UNSW-NB15",
+    "provenance": "Australian Centre for Cyber Security (ACCS), UNSW Canberra. Authors: Nour Moustafa and Jill Slay (2015).",
+    "train_source_file": "data/raw/UNSW_NB15_training-set.csv",
+    "test_source_file": "data/raw/UNSW_NB15_testing-set.csv",
+    "sample_size": null,
+    "deduplicated": true,
+    "random_seed": 999,
+    "input_feature_count_raw": 42,
+    "encoded_feature_dim": 66,
+    "categorical_columns": [
+      "proto",
+      "service",
+      "state"
+    ],
+    "numerical_columns": [
+      "dur",
+      "spkts",
+      "dpkts",
+      "sbytes",
+      "dbytes",
+      "rate",
+      "sttl",
+      "dttl",
+      "sload",
+      "dload",
+      "sloss",
+      "dloss",
+      "sinpkt",
+      "dinpkt",
+      "sjit",
+      "djit",
+      "swin",
+      "stcpb",
+      "dtcpb",
+      "dwin",
+      "tcprtt",
+      "synack",
+      "ackdat",
+      "smean",
+      "dmean",
+      "trans_depth",
+      "response_body_len",
+      "ct_srv_src",
+      "ct_state_ttl",
+      "ct_dst_ltm",
+      "ct_src_dport_ltm",
+      "ct_dst_sport_ltm",
+      "ct_dst_src_ltm",
+      "is_ftp_login",
+      "ct_ftp_cmd",
+      "ct_flw_http_mthd",
+      "ct_src_ltm",
+      "ct_srv_dst",
+      "is_sm_ips_ports"
+    ],
+    "target_mapping": {
+      "0": "BENIGN",
+      "1": "ATTACK"
+    },
+    "positive_class": "ATTACK (1)",
+    "negative_class": "BENIGN (0)"
+  },
+  "environment": {
+    "os_platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.15.2",
+    "torch_version": "2.15.0+cpu",
+    "pennylane_version": "0.45.1",
+    "sklearn_version": "1.9.1",
+    "numpy_version": "2.5.5"
+  }
+}

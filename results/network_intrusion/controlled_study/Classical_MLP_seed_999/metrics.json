@@ -1,121 +1,122 @@
 {
-  "test_loss": 0.1582171618938446,
+  "test_loss": 0.3256735456661312,
   "test_metrics": {
-    "accuracy": 0.9244444444444444,
-    "balanced_accuracy": 0.9257014590347923,
-    "macro_f1": 0.9239577741993201,
-    "roc_auc": 0.9852550193290934,
-    "attack_recall": 0.9131313131313131,
-    "attack_precision": 0.9475890985324947,
-    "attack_f1": 0.9300411522633745,
-    "benign_recall": 0.9382716049382716,
-    "benign_precision": 0.8983451536643026,
-    "benign_f1": 0.9178743961352657,
-    "false_positive_rate": 0.06172839506172839,
-    "false_negative_rate": 0.08686868686868687,
+    "accuracy": 0.8933677804962901,
+    "balanced_accuracy": 0.9148653307538901,
+    "macro_f1": 0.8849171977864495,
+    "roc_auc": 0.9825816367892964,
+    "attack_recall": 0.8553556615077802,
+    "attack_precision": 0.9861371408698341,
+    "attack_f1": 0.9161023984204977,
+    "benign_recall": 0.974375,
+    "benign_precision": 0.7596725465354254,
+    "benign_f1": 0.8537319971524013,
+    "false_positive_rate": 0.025625,
+    "false_negative_rate": 0.14464433849221978,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          380,
-          25
+          54565,
+          1435
         ],
         [
-          43,
-          452
+          17262,
+          102079
         ]
       ],
-      "true_benign_pred_benign": 380,
-      "true_benign_pred_attack": 25,
-      "true_attack_pred_benign": 43,
-      "true_attack_pred_attack": 452,
-      "tn": 380,
-      "fp": 25,
-      "fn": 43,
-      "tp": 452
+      "true_benign_pred_benign": 54565,
+      "true_benign_pred_attack": 1435,
+      "true_attack_pred_benign": 17262,
+      "true_attack_pred_attack": 102079,
+      "tn": 54565,
+      "fp": 1435,
+      "fn": 17262,
+      "tp": 102079
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 900
+    "decision_threshold": 0.4258,
+    "sample_count": 175341
   },
-  "val_loss": 0.1596706062555313,
+  "val_loss": 0.1295888487266186,
   "val_metrics": {
-    "accuracy": 0.9444444444444444,
-    "balanced_accuracy": 0.9468420632385819,
-    "macro_f1": 0.9441440636310827,
-    "roc_auc": 0.984869051421271,
-    "attack_recall": 0.9233870967741935,
-    "attack_precision": 0.9744680851063829,
-    "attack_f1": 0.94824016563147,
-    "benign_recall": 0.9702970297029703,
-    "benign_precision": 0.9116279069767442,
-    "benign_f1": 0.9400479616306955,
-    "false_positive_rate": 0.0297029702970297,
-    "false_negative_rate": 0.07661290322580645,
+    "accuracy": 0.9464903608502224,
+    "balanced_accuracy": 0.9458836621902118,
+    "macro_f1": 0.9427474999347627,
+    "roc_auc": 0.988772930149667,
+    "attack_recall": 0.9436191762322755,
+    "attack_precision": 0.9131002940215616,
+    "attack_f1": 0.9281089158226797,
+    "benign_recall": 0.9481481481481482,
+    "benign_precision": 0.9668058040151063,
+    "benign_f1": 0.9573860840468458,
+    "false_positive_rate": 0.05185185185185185,
+    "false_negative_rate": 0.05638082376772451,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          392,
-          12
+          4864,
+          266
         ],
         [
-          38,
-          458
+          167,
+          2795
         ]
       ],
-      "true_benign_pred_benign": 392,
-      "true_benign_pred_attack": 12,
-      "true_attack_pred_benign": 38,
-      "true_attack_pred_attack": 458,
-      "tn": 392,
-      "fp": 12,
-      "fn": 38,
-      "tp": 458
+      "true_benign_pred_benign": 4864,
+      "true_benign_pred_attack": 266,
+      "true_attack_pred_benign": 167,
+      "true_attack_pred_attack": 2795,
+      "tn": 4864,
+      "fp": 266,
+      "fn": 167,
+      "tp": 2795
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 900
+    "decision_threshold": 0.4258,
+    "sample_count": 8092
   },
-  "train_loss": 0.1343080699443817,
+  "train_loss": 0.12975848923227815,
   "train_metrics": {
-    "accuracy": 0.945,
-    "balanced_accuracy": 0.9478687889079283,
-    "macro_f1": 0.9447455759299836,
-    "roc_auc": 0.9909921365632055,
-    "attack_recall": 0.9195849546044098,
-    "attack_precision": 0.9792817679558011,
-    "attack_f1": 0.948494983277592,
-    "benign_recall": 0.9761526232114467,
-    "benign_precision": 0.908284023668639,
-    "benign_f1": 0.9409961685823754,
-    "false_positive_rate": 0.02384737678855326,
-    "false_negative_rate": 0.08041504539559015,
+    "accuracy": 0.9453918960177956,
+    "balanced_accuracy": 0.9436864289642404,
+    "macro_f1": 0.9414583721168895,
+    "roc_auc": 0.9885961407542295,
+    "attack_recall": 0.9373212583412774,
+    "attack_precision": 0.9155027932960894,
+    "attack_f1": 0.9262835609985869,
+    "benign_recall": 0.9500515995872033,
+    "benign_precision": 0.9633065922567143,
+    "benign_f1": 0.9566331832351922,
+    "false_positive_rate": 0.0499484004127967,
+    "false_negative_rate": 0.06267874165872259,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          1842,
-          45
+          27618,
+          1452
         ],
         [
-          186,
-          2127
+          1052,
+          15732
         ]
       ],
-      "true_benign_pred_benign": 1842,
-      "true_benign_pred_attack": 45,
-      "true_attack_pred_benign": 186,
-      "true_attack_pred_attack": 2127,
-      "tn": 1842,
-      "fp": 45,
-      "fn": 186,
-      "tp": 2127
+      "true_benign_pred_benign": 27618,
+      "true_benign_pred_attack": 1452,
+      "true_attack_pred_benign": 1052,
+      "true_attack_pred_attack": 15732,
+      "tn": 27618,
+      "fp": 1452,
+      "fn": 1052,
+      "tp": 15732
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 4200
+    "decision_threshold": 0.4258,
+    "sample_count": 45854
   },
-  "best_epoch": 14,
-  "duration_seconds": 16.866591599999992
+  "decision_threshold": 0.4258,
+  "best_epoch": 25,
+  "duration_seconds": 20.887028199998895
 }

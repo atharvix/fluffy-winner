@@ -1,6 +1,15 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
+export interface RuntimeConfigResponse {
+  api_base_url: string;
+  model_name: string;
+  model_family: string;
+  dataset: string;
+  input_feature_count: number;
+  decision_threshold: number;
+}
+
 export interface HealthResponse {
   status: "healthy" | "degraded" | "offline";
   service: string;
@@ -49,48 +58,48 @@ export interface ModelInfoResponse {
 
 export interface SingleFlowRecord {
   id?: string | number;
-  dur: number;
-  proto: string;
-  service: string;
-  state: string;
-  spkts: number;
-  dpkts: number;
-  sbytes: number;
-  dbytes: number;
-  rate: number;
-  sttl: number;
-  dttl: number;
-  sload: number;
-  dload: number;
-  sloss: number;
-  dloss: number;
-  sinpkt: number;
-  dinpkt: number;
-  sjit: number;
-  djit: number;
-  swin: number;
-  stcpb: number;
-  dtcpb: number;
-  dwin: number;
-  tcprtt: number;
-  synack: number;
-  ackdat: number;
-  smean: number;
-  dmean: number;
-  trans_depth: number;
-  response_body_len: number;
-  ct_srv_src: number;
-  ct_state_ttl: number;
-  ct_dst_ltm: number;
-  ct_src_dport_ltm: number;
-  ct_dst_sport_ltm: number;
-  ct_dst_src_ltm: number;
-  is_ftp_login: number;
-  ct_ftp_cmd: number;
-  ct_flw_http_mthd: number;
-  ct_src_ltm: number;
-  ct_srv_dst: number;
-  is_sm_ips_ports: number;
+  dur?: number;
+  proto?: string;
+  service?: string;
+  state?: string;
+  spkts?: number;
+  dpkts?: number;
+  sbytes?: number;
+  dbytes?: number;
+  rate?: number;
+  sttl?: number;
+  dttl?: number;
+  sload?: number;
+  dload?: number;
+  sloss?: number;
+  dloss?: number;
+  sinpkt?: number;
+  dinpkt?: number;
+  sjit?: number;
+  djit?: number;
+  swin?: number;
+  stcpb?: number;
+  dtcpb?: number;
+  dwin?: number;
+  tcprtt?: number;
+  synack?: number;
+  ackdat?: number;
+  smean?: number;
+  dmean?: number;
+  trans_depth?: number;
+  response_body_len?: number;
+  ct_srv_src?: number;
+  ct_state_ttl?: number;
+  ct_dst_ltm?: number;
+  ct_src_dport_ltm?: number;
+  ct_dst_sport_ltm?: number;
+  ct_dst_src_ltm?: number;
+  is_ftp_login?: number;
+  ct_ftp_cmd?: number;
+  ct_flw_http_mthd?: number;
+  ct_src_ltm?: number;
+  ct_srv_dst?: number;
+  is_sm_ips_ports?: number;
   [key: string]: any;
 }
 
@@ -168,6 +177,7 @@ export interface ModelBenchmarkStats {
   test_benign_f1: { mean: number; std: number; formatted: string };
   test_false_positive_rate: { mean: number; std: number; formatted: string };
   test_false_negative_rate: { mean: number; std: number; formatted: string };
+  decision_threshold?: { mean: number; std: number; formatted: string };
   duration_seconds: { mean: number; std: number; formatted: string };
 }
 
@@ -186,6 +196,16 @@ export async function checkHealth(): Promise<HealthResponse> {
 }
 
 export const fetchHealth = checkHealth;
+
+export async function fetchRuntimeConfig(): Promise<RuntimeConfigResponse> {
+  const res = await fetch(`${API_BASE_URL}/api/config`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) {
+    throw new Error(`Config fetch failed with status ${res.status}`);
+  }
+  return res.json();
+}
 
 
 export async function fetchModelInfo(): Promise<ModelInfoResponse> {

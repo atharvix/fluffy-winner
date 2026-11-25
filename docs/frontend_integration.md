@@ -247,8 +247,15 @@ Accepts a multipart CSV file upload containing UNSW-NB15 flow features.
    - Render 4 gauge needles or polar dials showing the classical encoder rotation angles $\theta_0, \theta_1, \theta_2, \theta_3 \in [-\pi, \pi]$.
    - Render 4 bar meters for the Pauli-Z expectation values $\langle Z_i \rangle \in [-1, 1]$ representing simulated qubit spin measurements.
 4. **Historical Experiment Metrics vs Live Inference:**
-   - Clearly label summary benchmark tables (e.g., *Classical MLP 93.7% Accuracy*, *Hybrid Quantum 93.0% Accuracy*) as **Controlled Benchmark Results on Held-Out Test Set (UNSW-NB15)**.
+   - Clearly label summary benchmark tables as **Controlled Benchmark Results on Held-Out Test Set (UNSW-NB15, 175,341 Flows)**.
    - Do NOT present historical test metrics as real-time server stream stats.
+   - Official 6-Model Benchmark Summary (Mean $\pm$ Std Dev over 3 Seeds with validation-tuned threshold $\tau^*$):
+     - **Classical MLP:** .23\% \pm 0.19\%$ Acc, .8838 \pm 0.0018$ Macro F1, .9821 \pm 0.0009$ ROC-AUC, .40\% \pm 0.42\%$ Recall, .62\% \pm 0.35\%$ FPR, $\tau^* = 0.4225$, Time: .90\text{s} \pm 3.48\text{s}$ (6,593 params).
+     - **Classical Bottleneck:** .41\% \pm 0.25\%$ Acc, .8855 \pm 0.0025$ Macro F1, .9821 \pm 0.0007$ ROC-AUC, .84\% \pm 0.44\%$ Recall, .99\% \pm 0.17\%$ FPR, $\tau^* = 0.3532$, Time: .01\text{s} \pm 0.60\text{s}$ (1,145 params).
+     - **Standard VQC (=2$):** .02\% \pm 0.48\%$ Acc, .8814 \pm 0.0047$ Macro F1, .9783 \pm 0.0019$ ROC-AUC, .47\% \pm 0.87\%$ Recall, .41\% \pm 0.36\%$ FPR, $\tau^* = 0.3631$, Time: .33\text{s} \pm 5.68\text{s}$ (1,161 params).
+     - **Hybrid Re-uploading (=1$):** .76\% \pm 0.72\%$ Acc, .8790 \pm 0.0072$ Macro F1, .9773 \pm 0.0049$ ROC-AUC, .87\% \pm 1.07\%$ Recall, .95\% \pm 0.38\%$ FPR, $\tau^* = 0.4225$, Time: .83\text{s} \pm 3.70\text{s}$ (1,153 params).
+     - **Hybrid Re-uploading (=2$):** .32\% \pm 0.31\%$ Acc, .8844 \pm 0.0030$ Macro F1, .9808 \pm 0.0014$ ROC-AUC, .87\% \pm 0.63\%$ Recall, .33\% \pm 0.58\%$ FPR, $\tau^* = 0.3301$, Time: .88\text{s} \pm 5.82\text{s}$ (1,161 params - DEPLOYED).
+     - **Hybrid Re-uploading (=4$):** .14\% \pm 0.34\%$ Acc, .8827 \pm 0.0036$ Macro F1, .9791 \pm 0.0016$ ROC-AUC, .55\% \pm 0.38\%$ Recall, .21\% \pm 0.47\%$ FPR, $\tau^* = 0.3631$, Time: .42\text{s} \pm 20.24\text{s}$ (1,177 params).
 5. **No Synthetic Detections:**
    - When the user uploads a CSV file or submits records, compute and show the actual output from the backend.
    - Never invent mock alerts when no data is uploaded.

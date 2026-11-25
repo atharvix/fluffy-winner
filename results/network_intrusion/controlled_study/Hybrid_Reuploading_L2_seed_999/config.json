@@ -2,20 +2,22 @@
   "model_family": "hybrid_reuploading",
   "model_name": "Hybrid_Reuploading_L2",
   "seed": 999,
+  "decision_threshold": 0.3169,
   "model": {
-    "input_dim": 63,
+    "input_dim": 66,
     "n_layers": 2,
     "encoder_hidden_dim": 16
   },
   "training": {
-    "batch_size": 64,
+    "batch_size": 256,
     "lr": 0.001,
     "weight_decay": 0.0001,
     "epochs": 30,
-    "patience": 8,
+    "patience": 6,
     "epochs_trained": 30,
-    "best_epoch": 29,
-    "duration_seconds": 35.842004400000405
+    "best_epoch": 26,
+    "duration_seconds": 177.1844426000025,
+    "decision_threshold": 0.3169
   },
   "circuit_metadata": {
     "type": "DataReuploadingVQC",
@@ -29,20 +31,21 @@
     "estimated_circuit_depth": 8
   },
   "parameter_breakdown": {
-    "classical_encoder": 1092,
+    "classical_encoder": 1140,
     "quantum_circuit": 16,
     "classical_output_head": 5,
-    "total_trainable": 1113
+    "total_trainable": 1161
   },
   "dataset_metadata": {
     "dataset_name": "UNSW-NB15",
     "provenance": "Australian Centre for Cyber Security (ACCS), UNSW Canberra. Authors: Nour Moustafa and Jill Slay (2015).",
-    "source_file": "data/raw/UNSW_NB15_training-set.csv",
-    "sample_size": 6000,
-    "deduplicated": false,
+    "train_source_file": "data/raw/UNSW_NB15_training-set.csv",
+    "test_source_file": "data/raw/UNSW_NB15_testing-set.csv",
+    "sample_size": null,
+    "deduplicated": true,
     "random_seed": 999,
     "input_feature_count_raw": 42,
-    "encoded_feature_dim": 63,
+    "encoded_feature_dim": 66,
     "categorical_columns": [
       "proto",
       "service",
@@ -98,10 +101,10 @@
   },
   "environment": {
     "os_platform": "Windows-11-10.0.26200-SP0",
-    "python_version": "3.13.6",
-    "torch_version": "2.14.1+cpu",
+    "python_version": "3.15.2",
+    "torch_version": "2.15.0+cpu",
     "pennylane_version": "0.45.1",
     "sklearn_version": "1.9.1",
-    "numpy_version": "2.5.3"
+    "numpy_version": "2.5.5"
   }
 }

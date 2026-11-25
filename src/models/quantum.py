@@ -24,10 +24,29 @@ Differentiation Method:
     Computes exact analytic gradients via PyTorch autograd in a single backward pass.
 """
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import pennylane as qml
 import torch
 import torch.nn as nn
+
+
+def get_quantum_device(n_qubits: int = 4, preferred_device: str = "lightning.qubit") -> Any:
+    """
+    Attempt to initialize preferred PennyLane device (e.g. lightning.qubit).
+    Automatically falls back to default.qubit if lightning is unavailable.
+    """
+    if preferred_device == "lightning.qubit":
+        try:
+            import importlib.util
+            if importlib.util.find_spec("pennylane_lightning.lightning_qubit_ops") is not None:
+                return qml.device("lightning.qubit", wires=n_qubits)
+            return qml.device("default.qubit", wires=n_qubits)
+        except Exception:
+            return qml.device("default.qubit", wires=n_qubits)
+    try:
+        return qml.device(preferred_device, wires=n_qubits)
+    except Exception:
+        return qml.device("default.qubit", wires=n_qubits)
 
 
 class QuantumDataReuploadingLayer(nn.Module):
@@ -63,7 +82,7 @@ class QuantumDataReuploadingLayer(nn.Module):
             torch.randn(n_layers, n_qubits, dtype=torch.float32) * 0.1
         )
 
-        self.dev = qml.device("default.qubit", wires=self.n_qubits)
+        self.dev = get_quantum_device(self.n_qubits, preferred_device="lightning.qubit")
         self._qnode = self._build_qnode()
 
     def _build_qnode(self):
@@ -163,7 +182,7 @@ class StandardVQCLayer(nn.Module):
             torch.randn(n_layers, n_qubits, dtype=torch.float32) * 0.1
         )
 
-        self.dev = qml.device("default.qubit", wires=self.n_qubits)
+        self.dev = get_quantum_device(self.n_qubits, preferred_device="lightning.qubit")
         self._qnode = self._build_qnode()
 
     def _build_qnode(self):

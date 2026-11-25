@@ -12,6 +12,7 @@ from src.data.nids_dataset import (
     TARGET_LABEL_MAPPING,
     TARGET_NAMES,
     create_nids_dataloaders,
+    load_official_unsw_nb15_benchmark,
     prepare_nids_data,
 )
 
@@ -103,3 +104,29 @@ def test_nids_dataloaders_and_batch_shapes():
     assert y_b.ndim == 2
     assert y_b.shape[1] == 1
     assert x_b.shape[1] == splits.X_train.shape[1]
+
+
+def test_load_official_unsw_nb15_benchmark_loader():
+    """Verify official benchmark loader splits, deduplication, and held-out test counts."""
+    splits = load_official_unsw_nb15_benchmark(
+        train_path="data/raw/UNSW_NB15_training-set.csv",
+        test_path="data/raw/UNSW_NB15_testing-set.csv",
+        val_ratio=0.15,
+        random_seed=42,
+        deduplicate=True,
+    )
+    # Check deduplicated training partition (53,946 total: ~45,854 train, ~8,092 val)
+    assert len(splits.X_train) == 45854
+    assert len(splits.X_val) == 8092
+    assert len(splits.X_test) == 175341
+
+    # Verify matching feature dimensions
+    assert splits.X_train.shape[1] == splits.X_val.shape[1] == splits.X_test.shape[1] == 66
+    assert np.isfinite(splits.X_train).all()
+    assert np.isfinite(splits.X_test).all()
+
+    # Also test prepare_nids_data(sample_size=None) equivalence
+    splits_none = prepare_nids_data(sample_size=None, random_seed=42, deduplicate=True)
+    assert len(splits_none.X_train) == 45854
+    assert len(splits_none.X_test) == 175341
+

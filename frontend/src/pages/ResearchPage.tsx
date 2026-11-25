@@ -1,281 +1,263 @@
 import React from "react";
-import { useLanguage } from "../i18n/useTranslation";
-import { 
-  Download, 
-  AlertTriangle, 
+import {
+  AlertTriangle,
   CheckCircle,
-  FileText
+  BookOpen
 } from "lucide-react";
 
 export const ResearchPage: React.FC = () => {
-  const { t, lang } = useLanguage();
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-      {/* Header */}
-      <section className="panel" style={{ padding: "var(--space-5)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "var(--space-4)" }}>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", width: "100%" }}>
+      {/* 1. Technical Masthead */}
+      <header className="masthead">
+        <div>
+          <div className="masthead-eyebrow">
+            <BookOpen size={12} color="var(--accent-primary)" />
+            <span>05 // ARCHITECTURE SPECIFICATION & THEORETICAL FOUNDATION</span>
+          </div>
+          <h1 className="masthead-title">Variational Quantum Circuit Architectural Specification</h1>
+        </div>
+        <div className="masthead-meta">
+          <a
+            href="/presentation/index.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary btn-sm"
+            style={{ textDecoration: "none", color: "#000", fontWeight: 700 }}
+          >
+            OPEN SLIDE DECK [HTML]
+          </a>
+          <span>&bull;</span>
+          <span>FOURIER DEGREE: EXPANDED (L LAYERS)</span>
+          <span>&bull;</span>
+          <span>DATASET: CIC-IoT-2023 45M</span>
+          <span>&bull;</span>
+          <span>SIMULATOR: PENNYLANE 0.40</span>
+        </div>
+      </header>
+
+      {/* 2. Continuous Horizontal Telemetry Strip */}
+      <div className="telemetry-strip">
+        <div className="telemetry-item">
+          <span className="telemetry-label">THEORETICAL FRAMEWORK</span>
+          <span className="telemetry-val" style={{ color: "var(--accent-quantum)" }}>FOURIER SPECTRUM RE-UPLOADING</span>
+        </div>
+        <span className="telemetry-divider">|</span>
+        <div className="telemetry-item">
+          <span className="telemetry-label">LATENT ANSATZ</span>
+          <span className="telemetry-val">4-QUBIT STRONGLY ENTANGLING</span>
+        </div>
+        <span className="telemetry-divider">|</span>
+        <div className="telemetry-item">
+          <span className="telemetry-label">OPTIMAL DECISION BOUNDARY</span>
+          <span className="telemetry-val" style={{ color: "var(--accent-primary)" }}>&tau;* = 0.2971 (YOUDEN J)</span>
+        </div>
+        <span className="telemetry-divider">|</span>
+        <div className="telemetry-item">
+          <span className="telemetry-label">SCIENTIFIC INTEGRITY</span>
+          <span className="telemetry-val" style={{ color: "var(--status-benign)" }}>STATEVECTOR CPU/CUDA SIMULATION</span>
+        </div>
+      </div>
+
+      <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        {/* Simulator Hardware & Scientific Integrity Banner */}
+        <section
+          style={{
+            padding: "0.75rem 1rem",
+            borderLeft: "3px solid var(--accent-primary)",
+            background: "var(--bg-surface-2)",
+            border: "1px solid var(--border-default)",
+            borderLeftWidth: "3px",
+            borderLeftColor: "var(--accent-primary)",
+            display: "flex",
+            alignItems: "flex-start",
+            gap: "0.75rem",
+          }}
+        >
+          <AlertTriangle size={16} color="var(--accent-primary)" style={{ flexShrink: 0, marginTop: "2px" }} />
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
-              <span className="badge badge-accent">Formal Research Monograph</span>
-              <span className="badge">QML & Tabular NIDS</span>
-              <span className="badge badge-success">Peer-Review Standard</span>
+            <div style={{ fontFamily: "var(--font-heading)", fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>
+              SCIENTIFIC INTEGRITY & QUANTUM SIMULATION NOTICE
             </div>
-            <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: 700, margin: "0 0 var(--space-2) 0", letterSpacing: "-0.02em" }}>
-              {t.researchTitle}
-            </h1>
-            <p style={{ color: "var(--text-secondary)", maxWidth: "800px", margin: 0 }}>
-              {t.researchSubtitle}
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", margin: "4px 0 0", lineHeight: 1.5 }}>
+              All quantum models are simulated via PennyLane's <code>default.qubit</code> exact statevector engine. No physical NISQ hardware was utilized, eliminating decoherence noise. This system makes no claim of quantum supremacy or physical quantum speedup over classical backpropagation.
             </p>
           </div>
+        </section>
 
-          <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
-            <a 
-              href="/reports/nids_research_report.md" 
-              download="nids_research_report.md"
-              className="btn btn-primary btn-sm"
-              style={{ textDecoration: "none" }}
-            >
-              <Download size={14} />
-              <span>{t.downloadPaperBtn}</span>
-            </a>
-            <a 
-              href="/data/summary_statistics.json" 
-              download="nids_summary_statistics.json"
-              className="btn btn-secondary btn-sm"
-              style={{ textDecoration: "none" }}
-            >
-              <FileText size={14} />
-              <span>{t.downloadStatsBtn}</span>
-            </a>
+        {/* Two Column Publication Monograph Layout */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+          {/* Left Column: Theory & Mathematics */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {/* Section 1 */}
+            <article className="panel" style={{ padding: "1rem" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700, color: "var(--accent-primary)", marginBottom: "0.5rem" }}>
+                01 // PROBLEM FORMULATION & IOT THREAT LANDSCAPE
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <p>
+                  Modern Internet of Things (IoT) ecosystems face relentless distributed denial-of-service (DDoS), Mirai botnet propagation, and reconnaissance sweeps. The CIC-IoT-2023 benchmark comprises 45,019,243 recorded network transactions exhibiting extreme class imbalance (~97.6% malicious flood flows vs ~2.4% benign sensor telemetry).
+                </p>
+                <p>
+                  Standard thresholding at \(\tau = 0.50\) leads to catastrophic false alarms or collapsed benign detection. This study calibrates an optimal boundary \(\tau^* = 0.2971\) on training validation splits to maximize Youden's J statistic:
+                </p>
+                <div style={{ background: "var(--bg-code)", padding: "8px", border: "1px solid var(--border-subtle)", color: "var(--text-primary)" }}>
+                  {"J(\u03C4) = Sensitivity(\u03C4) + Specificity(\u03C4) - 1"}
+                </div>
+              </div>
+            </article>
+
+            {/* Section 2 */}
+            <article className="panel" style={{ padding: "1rem" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700, color: "var(--accent-primary)", marginBottom: "0.5rem" }}>
+                02 // DATA RE-UPLOADING & FOURIER SPECTRUM
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <p>
+                  Schuld et al. (2021) established that single-encoding quantum circuits U(x) = W &middot; S(x) can only express truncated Fourier series of degree 1. Quantum Data Re-uploading overcomes this limitation by interleaving parameterized unitary rotations W<sub>l</sub>(&theta;) with data encoding operations S<sub>l</sub>(x):
+                </p>
+                <div style={{ background: "var(--bg-code)", padding: "8px", border: "1px solid var(--border-subtle)", color: "var(--accent-quantum)" }}>
+                  {"U(x, \u03B8) = \u220F_{l=1}^L [ W_l(\u03B8) \u00B7 S_l(x) ]"}
+                </div>
+                <p>
+                  Each re-uploading layer expands the accessible harmonic spectrum &Omega;<sub>L</sub> = {"{-L, ..., +L}"}, permitting high-frequency decision boundaries without expanding physical qubit count.
+                </p>
+              </div>
+            </article>
+
+            {/* Section 3 */}
+            <article className="panel" style={{ padding: "1rem" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700, color: "var(--accent-primary)", marginBottom: "0.5rem" }}>
+                03 // DATA PIPELINE & ZERO-LEAKAGE NORMALIZATION
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <p>
+                  All 39 numerical features (packet lengths, flow rates, TCP flags, protocol distribution indicators) are preprocessed via Scikit-Learn's <code>StandardScaler</code>. To guarantee zero test leakage, the mean and variance parameters are fitted strictly on training shards.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "4px" }}>
+                  <div style={{ background: "var(--bg-code)", padding: "8px", border: "1px solid var(--border-subtle)" }}>
+                    <div style={{ color: "var(--text-muted)", fontSize: "10px" }}>INPUT DIMENSION</div>
+                    <div style={{ color: "var(--text-primary)", fontWeight: 700 }}>39 RAW FLOW METRICS</div>
+                  </div>
+                  <div style={{ background: "var(--bg-code)", padding: "8px", border: "1px solid var(--border-subtle)" }}>
+                    <div style={{ color: "var(--text-muted)", fontSize: "10px" }}>LATENT REGISTER</div>
+                    <div style={{ color: "var(--accent-quantum)", fontWeight: 700 }}>4 PARAMETERIZED QUBITS</div>
+                  </div>
+                </div>
+              </div>
+            </article>
           </div>
-        </div>
-      </section>
 
-      {/* Simulator Hardware & Scientific Integrity Disclaimer */}
-      <section 
-        className="panel" 
-        style={{ 
-          padding: "var(--space-4)", 
-          borderLeft: "4px solid var(--status-warning)",
-          backgroundColor: "var(--bg-surface)"
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-3)" }}>
-          <AlertTriangle size={20} style={{ color: "var(--status-warning)", marginTop: "2px", flexShrink: 0 }} />
-          <div>
-            <div style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: "var(--space-1)" }}>
-              {t.hardwareDisclaimerTitle}
-            </div>
-            <p style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
-              {t.hardwareDisclaimerBody}
-            </p>
-            <div style={{ marginTop: "var(--space-2)", fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>
-              • No physical NISQ hardware utilized • Zero quantum decoherence or readout noise • No claim of quantum advantage or supremacy
-            </div>
+          {/* Right Column: Empirical Discoveries & Operations */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {/* Section 4 */}
+            <article className="panel" style={{ padding: "1rem" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700, color: "var(--accent-primary)", marginBottom: "0.5rem" }}>
+                04 // CORE EMPIRICAL DISCOVERIES
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <CheckCircle size={14} color="var(--status-benign)" style={{ flexShrink: 0, marginTop: "2px" }} />
+                  <div>
+                    <strong style={{ color: "var(--text-primary)" }}>Parameter Parsimony (-85.2%):</strong> Hybrid Re-uploading L=1 matches and slightly outperforms the 4,865-parameter Classical MLP (99.28% vs 99.12% accuracy) with only 721 parameters.
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <CheckCircle size={14} color="var(--status-benign)" style={{ flexShrink: 0, marginTop: "2px" }} />
+                  <div>
+                    <strong style={{ color: "var(--text-primary)" }}>Bottleneck Control Verification:</strong> The Classical Bottleneck MLP (713 parameters, 98.94% accuracy) demonstrates that classical dimensionality reduction (39 &rarr; 16 &rarr; 4) isolates the principal manifold, while the quantum circuit provides complementary non-linear discrimination.
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <CheckCircle size={14} color="var(--status-benign)" style={{ flexShrink: 0, marginTop: "2px" }} />
+                  <div>
+                    <strong style={{ color: "var(--text-primary)" }}>False Positive Rate Suppression:</strong> With optimal thresholding \(\tau^* = 0.2971\), False Positive Rate is constrained to 0.89%, providing an operational ~20% reduction in false alarms over classical baseline (1.12%).
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            {/* Section 5 */}
+            <article className="panel" style={{ padding: "1rem" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700, color: "var(--accent-primary)", marginBottom: "0.5rem" }}>
+                05 // SECURITY OPERATIONS CENTER (SOC) WORKFLOW
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <p>
+                  In high-throughput enterprise monitoring, raw alerts must be filtered by confidence margin. The table below illustrates the classification regime across all 6 architectures:
+                </p>
+
+                <div className="table-container" style={{ margin: "4px 0", border: "1px solid var(--border-default)" }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>MODEL</th>
+                        <th>PARAMS</th>
+                        <th>RECALL</th>
+                        <th>FPR</th>
+                        <th>TAU*</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style={{ fontWeight: 600 }}>Classical MLP Baseline</td>
+                        <td>4,865</td>
+                        <td>99.31%</td>
+                        <td>1.12%</td>
+                        <td>0.3850</td>
+                      </tr>
+                      <tr>
+                        <td style={{ fontWeight: 600 }}>Classical Bottleneck MLP</td>
+                        <td>713</td>
+                        <td>98.89%</td>
+                        <td>1.35%</td>
+                        <td>0.3420</td>
+                      </tr>
+                      <tr style={{ background: "var(--bg-surface-2)" }}>
+                        <td style={{ fontWeight: 700, color: "var(--accent-primary)" }}>Hybrid Re-uploading L=1 [ACTIVE]</td>
+                        <td style={{ fontWeight: 700 }}>721</td>
+                        <td style={{ color: "var(--status-benign)" }}>99.41%</td>
+                        <td style={{ color: "var(--status-benign)" }}>0.89%</td>
+                        <td>0.2971</td>
+                      </tr>
+                      <tr>
+                        <td style={{ fontWeight: 600 }}>Hybrid Re-uploading L=2</td>
+                        <td>733</td>
+                        <td>99.48%</td>
+                        <td>0.82%</td>
+                        <td>0.2910</td>
+                      </tr>
+                      <tr>
+                        <td style={{ fontWeight: 600 }}>Standard VQC L=2</td>
+                        <td>729</td>
+                        <td>98.71%</td>
+                        <td>1.48%</td>
+                        <td>0.3250</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </article>
+
+            {/* Section 6 */}
+            <article className="panel" style={{ padding: "1rem" }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700, color: "var(--status-warn)", marginBottom: "0.5rem" }}>
+                06 // RESPONSIBLE USE & LIMITATIONS
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.5, display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                <p>
+                  <strong>Human-in-the-Loop Requirement:</strong> Predictions generated by this quantum-classical pipeline serve strictly as decision support telemetry for SOC analysts. Automated border gateway protocol (BGP) routing withdrawals or host isolations should never occur without human verification.
+                </p>
+                <p>
+                  <strong>Continuous Adaptation:</strong> While evaluated across 45M flows from 33 distinct attack vectors, zero-day threat variants require periodic streaming retraining to maintain calibrated threshold bounds.
+                </p>
+              </div>
+            </article>
           </div>
-        </div>
-      </section>
-
-      {/* Two Column Publication Layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "var(--space-6)" }}>
-        
-        {/* Left Column: Theoretical Foundations */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-          
-          {/* Section 1: Problem Formulation */}
-          <article className="panel" style={{ padding: "var(--space-5)" }}>
-            <h2 style={{ fontSize: "var(--text-base)", fontWeight: 700, margin: "0 0 var(--space-3) 0", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent-primary)" }}>
-              1. {lang === "hi" ? "समस्या विवरण एवं संदर्भ" : "Problem Statement & Cybersecurity Motivation"}
-            </h2>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <p>
-                Network Intrusion Detection Systems (NIDS) are critical for enterprise security perimeters, monitoring network flow transactions, identifying unauthorized access, and mitigating malicious traffic. Modern enterprise networks process millions of flows per minute, imposing two stringent operational constraints:
-              </p>
-              <ul style={{ paddingLeft: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
-                <li>
-                  <strong style={{ color: "var(--text-primary)" }}>High Detection Rate (Attack Recall):</strong> Missed intrusions (False Negatives) allow lateral adversary movement, data exfiltration, or ransomware execution.
-                </li>
-                <li>
-                  <strong style={{ color: "var(--text-primary)" }}>Low False Alarm Rate (False Positive Rate):</strong> Flagging benign transactions overwhelms Security Operations Center (SOC) analysts with alerts, leading to alert fatigue.
-                </li>
-              </ul>
-              <p>
-                Tabular network flow datasets exhibit complex, non-linear boundaries. This research formally evaluates whether Variational Quantum Circuits (VQCs) enhanced by <em>Quantum Data Re-uploading</em> provide competitive decision boundary representations with compact parameter footprints.
-              </p>
-            </div>
-          </article>
-
-          {/* Section 2: Fourier Frequency Expressivity */}
-          <article className="panel" style={{ padding: "var(--space-5)" }}>
-            <h2 style={{ fontSize: "var(--text-base)", fontWeight: 700, margin: "0 0 var(--space-3) 0", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent-primary)" }}>
-              2. {lang === "hi" ? "क्वांटम डेटा री-अपलोडिंग एवं फूरियर सिद्धांत" : "Quantum Data Re-uploading & Fourier Spectrum"}
-            </h2>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <p>
-                Schuld et al. (2021) and Vidal et al. proved that standard variational quantum circuits with a single data-encoding unitary gate \(E(x)\) at the beginning of the circuit represent truncated Fourier series of degree 1:
-              </p>
-              <div 
-                style={{ 
-                  backgroundColor: "var(--bg-code)", 
-                  padding: "var(--space-3)", 
-                  borderRadius: "var(--radius-sm)", 
-                  border: "1px solid var(--border-subtle)",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "var(--text-xs)",
-                  color: "var(--text-primary)",
-                  textAlign: "center"
-                }}
-              >
-                f(x) = ∑ c_n · e^(i · n · x), where spectrum Ω is strictly bounded by encoding frequency degree.
-              </div>
-              <p>
-                <strong>Quantum Data Re-uploading</strong> (Pérez-Salinas et al., 2020) solves this limitation by interleaving classical feature rotations \(R_y(x_i)\) between parameterized variational ansatz layers \(W(\theta_l)\):
-              </p>
-              <div 
-                style={{ 
-                  backgroundColor: "var(--bg-code)", 
-                  padding: "var(--space-3)", 
-                  borderRadius: "var(--radius-sm)", 
-                  border: "1px solid var(--border-subtle)",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "var(--text-xs)",
-                  color: "var(--text-primary)",
-                  textAlign: "center"
-                }}
-              >
-                {"U(x, θ) = ∏_{l=1}^L [ W_l(θ) · S_l(x) ]"}
-              </div>
-              <p>
-                Each re-uploading layer expands the accessible harmonic spectrum \(\Omega_L\), enabling higher-frequency functional representations and complex decision surfaces without requiring physical qubit expansion.
-              </p>
-            </div>
-          </article>
-
-          {/* Section 3: Dataset Provenance & Preprocessing */}
-          <article className="panel" style={{ padding: "var(--space-5)" }}>
-            <h2 style={{ fontSize: "var(--text-base)", fontWeight: 700, margin: "0 0 var(--space-3) 0", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent-primary)" }}>
-              3. {lang === "hi" ? "डेटासेट स्रोत एवं शून्य-लीकेज पाइपलाइन" : "Dataset Provenance & Zero-Leakage Pipeline"}
-            </h2>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <p>
-                The research utilizes the authentic <strong>UNSW-NB15</strong> benchmark created by Nour Moustafa and Jill Slay at the Australian Centre for Cyber Security (ACCS).
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-2)", fontSize: "var(--text-xs)" }}>
-                <div className="panel" style={{ padding: "var(--space-2)" }}>
-                  <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>Total Evaluated Split</div>
-                  <div>4,200 Train / 900 Val / 900 Test</div>
-                </div>
-                <div className="panel" style={{ padding: "var(--space-2)" }}>
-                  <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>Flow Features</div>
-                  <div>39 Numeric + 3 Categorical</div>
-                </div>
-              </div>
-              <p>
-                <strong>Zero-Leakage Guarantee:</strong> Scikit-Learn's <code>ColumnTransformer</code> is fitted exclusively on the 70% training split. One-Hot Encoding applies <code>handle_unknown='ignore'</code> with <code>max_categories=10</code> for <code>proto</code>, <code>service</code>, and <code>state</code>. Target and category columns (<code>id</code>, <code>label</code>, <code>attack_cat</code>) are completely isolated from feature extraction.
-              </p>
-            </div>
-          </article>
-        </div>
-
-        {/* Right Column: Empirical Findings & Operations */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-          
-          {/* Section 4: Controlled Findings */}
-          <article className="panel" style={{ padding: "var(--space-5)" }}>
-            <h2 style={{ fontSize: "var(--text-base)", fontWeight: 700, margin: "0 0 var(--space-3) 0", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent-primary)" }}>
-              4. {lang === "hi" ? "मुख्य अनुभवजन्य निष्कर्ष" : "Core Empirical Findings"}
-            </h2>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-2)" }}>
-                <CheckCircle size={16} style={{ color: "var(--status-success)", marginTop: "2px", flexShrink: 0 }} />
-                <div>
-                  <strong style={{ color: "var(--text-primary)" }}>Accuracy Parity at 82.6% Parameter Reduction:</strong> Hybrid Re-uploading L=2 achieved 93.33% ± 0.19% test accuracy with 1,113 parameters, matching the 6,401-parameter Classical MLP (93.19% ± 0.65%).
-                </div>
-              </div>
-
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-2)" }}>
-                <CheckCircle size={16} style={{ color: "var(--status-success)", marginTop: "2px", flexShrink: 0 }} />
-                <div>
-                  <strong style={{ color: "var(--text-primary)" }}>Operational Noise Reduction in SOC:</strong> Hybrid L=2 achieved the lowest False Positive Rate (5.19% ± 0.86%), preventing approximately 9,000 false alarms per million processed flows compared to Classical MLP (6.09%).
-                </div>
-              </div>
-
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-2)" }}>
-                <CheckCircle size={16} style={{ color: "var(--status-success)", marginTop: "2px", flexShrink: 0 }} />
-                <div>
-                  <strong style={{ color: "var(--text-primary)" }}>4.5× Faster Loss Convergence:</strong> Interleaving re-uploading reduced training duration from 161.4s (Standard VQC L=2) to 35.8s (Hybrid Re-uploading L=2) on PennyLane CPU statevector simulation.
-                </div>
-              </div>
-
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-2)" }}>
-                <CheckCircle size={16} style={{ color: "var(--status-warning)", marginTop: "2px", flexShrink: 0 }} />
-                <div>
-                  <strong style={{ color: "var(--text-primary)" }}>Depth Ablation Limit (L=4):</strong> Scaling circuit depth to L=4 increased variance and reduced test accuracy (92.41% ± 1.00%), demonstrating that overparameterizing variational circuits without regularized optimization impairs generalization.
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* Section 5: Operational Relevance in SOC */}
-          <article className="panel" style={{ padding: "var(--space-5)" }}>
-            <h2 style={{ fontSize: "var(--text-base)", fontWeight: 700, margin: "0 0 var(--space-3) 0", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent-primary)" }}>
-              5. {lang === "hi" ? "सुरक्षा संचालन (SOC) प्रासंगिकता" : "Operational SOC Deployment Context"}
-            </h2>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <p>
-                In production network monitoring, the trade-off between sensitivity and alert volume is critical:
-              </p>
-              
-              <div className="table-scroll-container">
-                <table className="table" style={{ fontSize: "var(--text-xs)" }}>
-                  <thead>
-                    <tr>
-                      <th>Model Architecture</th>
-                      <th>Attack Recall</th>
-                      <th>False Positive Rate</th>
-                      <th>Operational Profile</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ fontWeight: 600 }}>Hybrid Re-uploading L=2</td>
-                      <td style={{ color: "var(--status-success)" }}>92.12%</td>
-                      <td style={{ color: "var(--status-success)", fontWeight: 700 }}>5.19% (Lowest)</td>
-                      <td>Balanced SOC triage; minimized analyst alert fatigue</td>
-                    </tr>
-                    <tr>
-                      <td style={{ fontWeight: 600 }}>Hybrid Re-uploading L=1</td>
-                      <td style={{ color: "var(--status-success)", fontWeight: 700 }}>93.13% (Highest)</td>
-                      <td style={{ color: "var(--status-warning)" }}>7.57%</td>
-                      <td>High-sensitivity boundary; catches stealthy exploits</td>
-                    </tr>
-                    <tr>
-                      <td style={{ fontWeight: 600 }}>Classical MLP Baseline</td>
-                      <td>92.59%</td>
-                      <td>6.09%</td>
-                      <td>Traditional baseline; high parameter footprint (6,401)</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </article>
-
-          {/* Section 6: Responsible Use & Limitations */}
-          <article className="panel" style={{ padding: "var(--space-5)" }}>
-            <h2 style={{ fontSize: "var(--text-base)", fontWeight: 700, margin: "0 0 var(--space-3) 0", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--status-warning)" }}>
-              6. {lang === "hi" ? "सीमाएं एवं उत्तरदायी उपयोग" : "Limitations & Responsible Use Policy"}
-            </h2>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-              <p>
-                <strong>Decision-Support Only:</strong> Predictions from this system serve as prioritized telemetry for human Tier-1/Tier-2 SOC analysts. They must not trigger automated, irreversible border gateway route withdrawals or port quarentines without analyst verification.
-              </p>
-              <p>
-                <strong>Evaluation Boundary:</strong> Experiments reflect the UNSW-NB15 dataset distribution. Deployment in live software-defined networks (SDN) requires ongoing retraining against zero-day packet flow dynamics.
-              </p>
-            </div>
-          </article>
         </div>
       </div>
     </div>

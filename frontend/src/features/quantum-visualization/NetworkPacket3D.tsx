@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { Eye, RotateCcw, Box, ArrowRight } from "lucide-react";
 
 interface NetworkPacket3DProps {
+  headerLength?: number;
+  protocolType?: number | string;
+  ttl?: number;
+  rate?: number;
+  totSum?: number;
+  iat?: number;
   dur?: number;
   proto?: string;
   service?: string;
@@ -15,14 +21,12 @@ interface NetworkPacket3DProps {
 }
 
 export const NetworkPacket3D: React.FC<NetworkPacket3DProps> = ({
-  dur = 0.000011,
-  proto = "udp",
-  service = "-",
-  state = "INT",
-  spkts = 2,
-  dpkts = 0,
-  sbytes = 496,
-  dbytes = 0,
+  headerLength = 28.0,
+  protocolType = 6.0,
+  ttl = 64.0,
+  rate = 201.02,
+  totSum = 9434.0,
+  iat = 0.0059,
   angles = [0.34, -0.89, 1.20, -0.45],
   interactive = true,
 }) => {
@@ -64,7 +68,7 @@ export const NetworkPacket3D: React.FC<NetworkPacket3DProps> = ({
           <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, textTransform: "uppercase" }}>
             3D Flow Tensor & Latent Compression
           </span>
-          <span className="badge badge-neutral">42 Raw → 63 Encoded → 4 Quantum Angles</span>
+          <span className="badge badge-neutral">39 Raw → 39 Scaled → 4 Quantum Angles</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
@@ -124,27 +128,27 @@ export const NetworkPacket3D: React.FC<NetworkPacket3DProps> = ({
             flexWrap: "nowrap",
           }}
         >
-          {/* Card 1: Raw Flow Header */}
+          {/* Card 1: Raw Flow Header (CIC-IoT-2023) */}
           <div
             style={{
-              width: "160px",
+              width: "165px",
               padding: "10px",
               background: "var(--bg-surface-1)",
               border: "1px solid var(--border-default)",
-              boxShadow: is3D ? "0 8px 16px rgba(0,0,0,0.2)" : "none",
+              boxShadow: is3D ? "0 4px 12px rgba(0,0,0,0.3)" : "none",
               transform: is3D ? "translateZ(20px)" : "none",
               fontSize: "11px",
               fontFamily: "var(--font-mono)",
             }}
           >
             <div style={{ color: "var(--accent-primary)", fontWeight: 700, marginBottom: "4px" }}>
-              FLOW_HEADER
+              RAW_FLOW_39
             </div>
-            <div style={{ color: "var(--text-secondary)" }}>proto: {proto}</div>
-            <div style={{ color: "var(--text-secondary)" }}>srv: {service} | st: {state}</div>
-            <div style={{ color: "var(--text-muted)" }}>spkts: {spkts} / dpkts: {dpkts}</div>
-            <div style={{ color: "var(--text-muted)" }}>bytes: {sbytes + dbytes}</div>
-            <div style={{ color: "var(--text-muted)" }}>dur: {dur.toFixed(5)}s</div>
+            <div style={{ color: "var(--text-secondary)" }}>proto_type: {protocolType}</div>
+            <div style={{ color: "var(--text-secondary)" }}>ttl: {ttl} | hdr: {headerLength}B</div>
+            <div style={{ color: "var(--text-muted)" }}>rate: {typeof rate === 'number' ? rate.toFixed(1) : rate} pkts/s</div>
+            <div style={{ color: "var(--text-muted)" }}>tot_sum: {totSum}B</div>
+            <div style={{ color: "var(--text-muted)" }}>iat: {typeof iat === 'number' ? iat.toFixed(5) : iat}s</div>
           </div>
 
           <ArrowRight size={16} color="var(--text-muted)" />
@@ -152,11 +156,11 @@ export const NetworkPacket3D: React.FC<NetworkPacket3DProps> = ({
           {/* Card 2: Neural Compression Layer */}
           <div
             style={{
-              width: "140px",
+              width: "145px",
               padding: "10px",
               background: "var(--bg-surface-2)",
               border: "1px dashed var(--border-strong)",
-              boxShadow: is3D ? "0 6px 12px rgba(0,0,0,0.15)" : "none",
+              boxShadow: is3D ? "0 4px 10px rgba(0,0,0,0.25)" : "none",
               transform: is3D ? "translateZ(35px)" : "none",
               fontSize: "11px",
               fontFamily: "var(--font-mono)",
@@ -166,9 +170,9 @@ export const NetworkPacket3D: React.FC<NetworkPacket3DProps> = ({
             <div style={{ color: "var(--text-primary)", fontWeight: 700, marginBottom: "4px" }}>
               MLP_ENCODER
             </div>
-            <div style={{ color: "var(--text-secondary)" }}>Linear(63 → 16)</div>
+            <div style={{ color: "var(--accent-primary)" }}>Linear(39 → 16)</div>
             <div style={{ color: "var(--text-muted)" }}>ReLU Activation</div>
-            <div style={{ color: "var(--text-secondary)" }}>Linear(16 → 4)</div>
+            <div style={{ color: "var(--accent-primary)" }}>Linear(16 → 4)</div>
             <div style={{ color: "var(--status-warn)", fontWeight: 600 }}>π · tanh(·)</div>
           </div>
 
@@ -177,43 +181,43 @@ export const NetworkPacket3D: React.FC<NetworkPacket3DProps> = ({
           {/* Card 3: 4 Bounded Quantum Angles */}
           <div
             style={{
-              width: "160px",
+              width: "165px",
               padding: "10px",
               background: "var(--bg-surface-1)",
-              border: "1px solid var(--accent-primary)",
-              boxShadow: is3D ? "0 8px 16px rgba(0,0,0,0.25)" : "none",
+              border: "1px solid var(--accent-quantum)",
+              boxShadow: is3D ? "0 4px 12px rgba(6,182,212,0.15)" : "none",
               transform: is3D ? "translateZ(50px)" : "none",
               fontSize: "11px",
               fontFamily: "var(--font-mono)",
             }}
           >
-            <div style={{ color: "var(--accent-primary)", fontWeight: 700, marginBottom: "4px" }}>
-              ROTATION_ANGLES θ
-            </div>
-            {angles.map((a, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)" }}>
-                <span>θ_{i}:</span>
-                <span style={{ fontWeight: 600 }}>{a !== undefined ? a.toFixed(3) : "0.000"} rad</span>
+              <div style={{ color: "var(--accent-quantum)", fontWeight: 700, marginBottom: "4px" }}>
+                ROTATION_ANGLES θ
               </div>
-            ))}
+              {angles.map((a, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)" }}>
+                  <span>θ_{i}:</span>
+                  <span style={{ fontWeight: 600, color: "var(--accent-quantum)" }}>{a !== undefined ? a.toFixed(3) : "0.000"} rad</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {is3D && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: "4px",
-              right: "6px",
-              fontSize: "10px",
-              fontFamily: "var(--font-mono)",
-              color: "var(--text-muted)",
-            }}
-          >
-            Interactive 3D Stage
-          </div>
-        )}
+          {is3D && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: "4px",
+                right: "6px",
+                fontSize: "10px",
+                fontFamily: "var(--font-mono)",
+                color: "var(--text-muted)",
+              }}
+            >
+              Interactive 3D Stage
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+      );
 };

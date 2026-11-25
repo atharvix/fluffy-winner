@@ -1,121 +1,122 @@
 {
-  "test_loss": 0.17310760915279388,
+  "test_loss": 0.32533831041898786,
   "test_metrics": {
-    "accuracy": 0.9333333333333333,
-    "balanced_accuracy": 0.9335578002244669,
-    "macro_f1": 0.932775285207077,
-    "roc_auc": 0.983045267489712,
-    "attack_recall": 0.9313131313131313,
-    "attack_precision": 0.946611909650924,
-    "attack_f1": 0.9389002036659878,
-    "benign_recall": 0.9358024691358025,
-    "benign_precision": 0.9176755447941889,
-    "benign_f1": 0.9266503667481663,
-    "false_positive_rate": 0.06419753086419754,
-    "false_negative_rate": 0.06868686868686869,
+    "accuracy": 0.8850297420454999,
+    "balanced_accuracy": 0.9073515292912148,
+    "macro_f1": 0.8762765837769099,
+    "roc_auc": 0.9772911164975036,
+    "attack_recall": 0.8455602014395723,
+    "attack_precision": 0.983164130244159,
+    "attack_f1": 0.9091851030953378,
+    "benign_recall": 0.9691428571428572,
+    "benign_precision": 0.7464891407507256,
+    "benign_f1": 0.8433680644584819,
+    "false_positive_rate": 0.030857142857142857,
+    "false_negative_rate": 0.1544397985604277,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          379,
-          26
+          54272,
+          1728
         ],
         [
-          34,
-          461
+          18431,
+          100910
         ]
       ],
-      "true_benign_pred_benign": 379,
-      "true_benign_pred_attack": 26,
-      "true_attack_pred_benign": 34,
-      "true_attack_pred_attack": 461,
-      "tn": 379,
-      "fp": 26,
-      "fn": 34,
-      "tp": 461
+      "true_benign_pred_benign": 54272,
+      "true_benign_pred_attack": 1728,
+      "true_attack_pred_benign": 18431,
+      "true_attack_pred_attack": 100910,
+      "tn": 54272,
+      "fp": 1728,
+      "fn": 18431,
+      "tp": 100910
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 900
+    "decision_threshold": 0.4258,
+    "sample_count": 175341
   },
-  "val_loss": 0.1380176544189453,
+  "val_loss": 0.1469800834955111,
   "val_metrics": {
-    "accuracy": 0.9555555555555556,
-    "balanced_accuracy": 0.955545352922389,
-    "macro_f1": 0.9551265431483217,
-    "roc_auc": 0.9913765570105397,
-    "attack_recall": 0.9556451612903226,
-    "attack_precision": 0.9634146341463414,
-    "attack_f1": 0.9595141700404858,
-    "benign_recall": 0.9554455445544554,
-    "benign_precision": 0.946078431372549,
-    "benign_f1": 0.9507389162561576,
-    "false_positive_rate": 0.04455445544554455,
-    "false_negative_rate": 0.04435483870967742,
+    "accuracy": 0.9467375185368265,
+    "balanced_accuracy": 0.9415128995871027,
+    "macro_f1": 0.9424905618139495,
+    "roc_auc": 0.9851506344825227,
+    "attack_recall": 0.9220121539500338,
+    "attack_precision": 0.9317639031047424,
+    "attack_f1": 0.9268623790938402,
+    "benign_recall": 0.9610136452241715,
+    "benign_precision": 0.955241232319318,
+    "benign_f1": 0.9581187445340589,
+    "false_positive_rate": 0.03898635477582846,
+    "false_negative_rate": 0.07798784604996624,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          386,
-          18
+          4930,
+          200
         ],
         [
-          22,
-          474
+          231,
+          2731
         ]
       ],
-      "true_benign_pred_benign": 386,
-      "true_benign_pred_attack": 18,
-      "true_attack_pred_benign": 22,
-      "true_attack_pred_attack": 474,
-      "tn": 386,
-      "fp": 18,
-      "fn": 22,
-      "tp": 474
+      "true_benign_pred_benign": 4930,
+      "true_benign_pred_attack": 200,
+      "true_attack_pred_benign": 231,
+      "true_attack_pred_attack": 2731,
+      "tn": 4930,
+      "fp": 200,
+      "fn": 231,
+      "tp": 2731
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 900
+    "decision_threshold": 0.4258,
+    "sample_count": 8092
   },
-  "train_loss": 0.14648590981960297,
+  "train_loss": 0.14038539909919223,
   "train_metrics": {
-    "accuracy": 0.9433333333333334,
-    "balanced_accuracy": 0.9440131365056977,
-    "macro_f1": 0.9428804047331322,
-    "roc_auc": 0.9895622333251082,
-    "attack_recall": 0.9373108517077389,
-    "attack_precision": 0.9588677576293675,
-    "attack_f1": 0.9479667686926104,
-    "benign_recall": 0.9507154213036566,
-    "benign_precision": 0.925219185146983,
-    "benign_f1": 0.9377940407736539,
-    "false_positive_rate": 0.0492845786963434,
-    "false_negative_rate": 0.06268914829226113,
+    "accuracy": 0.9437998865965892,
+    "balanced_accuracy": 0.9385026298245287,
+    "macro_f1": 0.9393371680673146,
+    "roc_auc": 0.9865454240331759,
+    "attack_recall": 0.9187321258341278,
+    "attack_precision": 0.9270726868273913,
+    "attack_f1": 0.9228835622587306,
+    "benign_recall": 0.9582731338149295,
+    "benign_precision": 0.9533212415728415,
+    "benign_f1": 0.9557907738758985,
+    "false_positive_rate": 0.04172686618507052,
+    "false_negative_rate": 0.08126787416587226,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          1794,
-          93
+          27857,
+          1213
         ],
         [
-          145,
-          2168
+          1364,
+          15420
         ]
       ],
-      "true_benign_pred_benign": 1794,
-      "true_benign_pred_attack": 93,
-      "true_attack_pred_benign": 145,
-      "true_attack_pred_attack": 2168,
-      "tn": 1794,
-      "fp": 93,
-      "fn": 145,
-      "tp": 2168
+      "true_benign_pred_benign": 27857,
+      "true_benign_pred_attack": 1213,
+      "true_attack_pred_benign": 1364,
+      "true_attack_pred_attack": 15420,
+      "tn": 27857,
+      "fp": 1213,
+      "fn": 1364,
+      "tp": 15420
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 4200
+    "decision_threshold": 0.4258,
+    "sample_count": 45854
   },
+  "decision_threshold": 0.4258,
   "best_epoch": 30,
-  "duration_seconds": 161.2789802999996
+  "duration_seconds": 136.22024600001168
 }

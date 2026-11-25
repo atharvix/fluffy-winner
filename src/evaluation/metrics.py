@@ -234,3 +234,63 @@ def compute_nids_metrics(
         "sample_count": int(len(y_true_arr)),
     }
 
+
+def optimize_decision_threshold(
+    y_val_true: Union[np.ndarray, List[int]],
+    y_val_probs: Union[np.ndarray, List[float]],
+    metric: str = "youden_j",
+    max_allowed_fpr: float = 0.05,
+) -> float:
+    """
+    Find optimal decision threshold tau* on validation split.
+
+    Objectives:
+    - 'youden_j': Maximize Youden's J statistic (Recall - FPR), balancing sensitivity and false alarms.
+    - 'constrained_fpr': Maximize Recall subject to FPR <= max_allowed_fpr.
+
+    Args:
+        y_val_true: Ground truth binary labels (0 or 1).
+        y_val_probs: Predicted probabilities for class 1 (ATTACK).
+        metric: Optimization objective ('youden_j' or 'constrained_fpr').
+        max_allowed_fpr: Maximum acceptable false-positive rate for 'constrained_fpr' (default 0.05).
+
+    Returns:
+        Optimal threshold tau* in [0.01, 0.99] as float rounded to 4 decimal places.
+    """
+    y_true = np.asarray(y_val_true).ravel()
+    y_probs = np.asarray(y_val_probs).ravel()
+
+    if len(y_true) != len(y_probs):
+        raise ValueError(
+            f"Shape mismatch: y_val_true has {len(y_true)} items, y_val_probs has {len(y_probs)} items."
+        )
+
+    thresholds = np.linspace(0.01, 0.99, 100)
+    best_tau = 0.5
+    best_score = -float("inf")
+
+    for tau in thresholds:
+        preds = (y_probs >= tau).astype(int)
+        cm = confusion_matrix(y_true, preds, labels=[0, 1])
+        tn, fp, fn, tp = int(cm[0, 0]), int(cm[0, 1]), int(cm[1, 0]), int(cm[1, 1])
+
+        benign_total = tn + fp
+        attack_total = tp + fn
+
+        recall = float(tp / attack_total) if attack_total > 0 else 0.0
+        fpr = float(fp / benign_total) if benign_total > 0 else 0.0
+
+        if metric == "youden_j":
+            score = recall - fpr
+        elif metric == "constrained_fpr":
+            score = recall if fpr <= max_allowed_fpr else (-10.0 - fpr)
+        else:
+            raise ValueError(f"Unknown threshold optimization metric: {metric}")
+
+        if score > best_score:
+            best_score = score
+            best_tau = float(tau)
+
+    return round(best_tau, 4)
+
+

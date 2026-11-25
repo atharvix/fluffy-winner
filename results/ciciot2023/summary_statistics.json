@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "dataset": "CIC-IoT-2023",
+    "study_duration_seconds": 27.0,
+    "environment": {
+      "os_platform": "Windows-11-10.0.26200-SP0",
+      "python_version": "3.15.2",
+      "torch_version": "2.14.1+cu130",
+      "pennylane_version": "0.45.1",
+      "sklearn_version": "1.9.1",
+      "numpy_version": "2.5.5",
+      "cuda_available": "True",
+      "cuda_device": "NVIDIA GeForce RTX 5060"
+    },
+    "sample_counts": {
+      "train": 500000,
+      "val": 100000,
+      "test": 500000,
+      "total": 1100000
+    },
+    "class_distribution": {
+      "train": {
+        "BENIGN": 250000,
+        "ATTACK": 250000
+      },
+      "val": {
+        "BENIGN": 50000,
+        "ATTACK": 50000
+      },
+      "test": {
+        "BENIGN": 250000,
+        "ATTACK": 250000
+      }
+    }
+  },
+  "best_model": {
+    "model_name": "Classical_MLP",
+    "seed": 42,
+    "checkpoint_path": "results\\ciciot2023\\controlled_study\\Classical_MLP_seed42\\best_model.pt",
+    "macro_f1": 0.9007256609693387,
+    "accuracy": 0.901208,
+    "optimal_threshold": 0.5247
+  },
+  "models": {
+    "Classical_MLP": {
+      "model_family": "classical",
+      "parameter_breakdown": {
+        "feature_extractor": 4832,
+        "output_layer": 33,
+        "quantum_circuit": 0,
+        "total_trainable": 4865
+      },
+      "circuit_metadata": {},
+      "n_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "training_time_mean_s": 11.95,
+      "training_time_std_s": 0.0,
+      "optimal_threshold_mean": 0.5247,
+      "optimal_threshold_std": 0.0,
+      "test_metrics": {
+        "accuracy": {
+          "mean": 0.9012,
+          "std": 0.0
+        },
+        "balanced_accuracy": {
+          "mean": 0.9012,
+          "std": 0.0
+        },
+        "macro_f1": {
+          "mean": 0.9007,
+          "std": 0.0
+        },
+        "attack_recall": {
+          "mean": 0.8315,
+          "std": 0.0
+        },
+        "attack_precision": {
+          "mean": 0.9662,
+          "std": 0.0
+        },
+        "attack_f1": {
+          "mean": 0.8938,
+          "std": 0.0
+        },
+        "benign_recall": {
+          "mean": 0.9709,
+          "std": 0.0
+        },
+        "benign_precision": {
+          "mean": 0.8521,
+          "std": 0.0
+        },
+        "false_positive_rate": {
+          "mean": 0.0291,
+          "std": 0.0
+        },
+        "roc_auc": {
+          "mean": 0.9607,
+          "std": 0.0
+        }
+      }
+    },
+    "Classical_Bottleneck_MLP": {
+      "model_family": "classical_bottleneck",
+      "parameter_breakdown": {
+        "classical_encoder": 708,
+        "quantum_circuit": 0,
+        "classical_output_head": 5,
+        "total_trainable": 713
+      },
+      "circuit_metadata": {},
+      "n_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "training_time_mean_s": 11.41,
+      "training_time_std_s": 0.0,
+      "optimal_threshold_mean": 0.5148,
+      "optimal_threshold_std": 0.0,
+      "test_metrics": {
+        "accuracy": {
+          "mean": 0.8972,
+          "std": 0.0
+        },
+        "balanced_accuracy": {
+          "mean": 0.8972,
+          "std": 0.0
+        },
+        "macro_f1": {
+          "mean": 0.8969,
+          "std": 0.0
+        },
+        "attack_recall": {
+          "mean": 0.8387,
+          "std": 0.0
+        },
+        "attack_precision": {
+          "mean": 0.9499,
+          "std": 0.0
+        },
+        "attack_f1": {
+          "mean": 0.8908,
+          "std": 0.0
+        },
+        "benign_recall": {
+          "mean": 0.9558,
+          "std": 0.0
+        },
+        "benign_precision": {
+          "mean": 0.8556,
+          "std": 0.0
+        },
+        "false_positive_rate": {
+          "mean": 0.0442,
+          "std": 0.0
+        },
+        "roc_auc": {
+          "mean": 0.957,
+          "std": 0.0
+        }
+      }
+    }
+  }
+}

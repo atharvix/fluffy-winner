@@ -1,0 +1,181 @@
+{
+  "model_name": "Hybrid_Reuploading_L1",
+  "model_family": "hybrid_reuploading",
+  "seed": 123,
+  "best_epoch": 1,
+  "best_val_loss": 0.00227,
+  "optimal_threshold": 0.3565,
+  "test_loss": 0.00227,
+  "test_metrics": {
+    "accuracy": 0.9791037077957604,
+    "balanced_accuracy": 0.9885476997151492,
+    "macro_f1": 0.8398791163928161,
+    "roc_auc": 0.9961930412726907,
+    "attack_recall": 0.9786409871340783,
+    "attack_precision": 0.9999622361761166,
+    "attack_f1": 0.989186733731278,
+    "benign_recall": 0.9984544122962202,
+    "benign_precision": 0.5278147893024683,
+    "benign_f1": 0.6905714990543541,
+    "false_positive_rate": 0.0015455877037797942,
+    "false_negative_rate": 0.021359012865921626,
+    "confusion_matrix": {
+      "raw_matrix": [
+        [
+          209951,
+          325
+        ],
+        [
+          187823,
+          8605795
+        ]
+      ],
+      "true_benign_pred_benign": 209951,
+      "true_benign_pred_attack": 325,
+      "true_attack_pred_benign": 187823,
+      "true_attack_pred_attack": 8605795,
+      "tn": 209951,
+      "fp": 325,
+      "fn": 187823,
+      "tp": 8605795
+    },
+    "positive_class": "ATTACK (1)",
+    "negative_class": "BENIGN (0)",
+    "decision_threshold": 0.3565,
+    "sample_count": 9003894,
+    "per_attack_category_recall": {
+      "BACKDOOR_MALWARE": 0.0109,
+      "BENIGN": 0.9985,
+      "BROWSERHIJACKING": 0.0361,
+      "COMMANDINJECTION": 0.0109,
+      "DDOS-ACK_FRAGMENTATION": 0.999,
+      "DDOS-HTTP_FLOOD": 0.9953,
+      "DDOS-ICMP_FLOOD": 0.9999,
+      "DDOS-ICMP_FRAGMENTATION": 0.9989,
+      "DDOS-PSHACK_FLOOD": 0.9998,
+      "DDOS-RSTFINFLOOD": 0.9999,
+      "DDOS-SLOWLORIS": 0.9946,
+      "DDOS-SYNONYMOUSIP_FLOOD": 0.9999,
+      "DDOS-SYN_FLOOD": 0.9999,
+      "DDOS-TCP_FLOOD": 0.9999,
+      "DDOS-UDP_FLOOD": 0.9999,
+      "DDOS-UDP_FRAGMENTATION": 0.9991,
+      "DICTIONARYBRUTEFORCE": 0.0435,
+      "DNS_SPOOFING": 0.2092,
+      "DOS-HTTP_FLOOD": 0.9983,
+      "DOS-SYN_FLOOD": 0.9998,
+      "DOS-TCP_FLOOD": 0.9999,
+      "DOS-UDP_FLOOD": 0.9998,
+      "MIRAI-GREETH_FLOOD": 0.9997,
+      "MIRAI-GREIP_FLOOD": 0.9992,
+      "MIRAI-UDPPLAIN": 0.9988,
+      "MITM-ARPSPOOFING": 0.1961,
+      "RECON-HOSTDISCOVERY": 0.5124,
+      "RECON-OSSCAN": 0.2531,
+      "RECON-PINGSWEEP": 0.0162,
+      "RECON-PORTSCAN": 0.3667,
+      "SQLINJECTION": 0.0078,
+      "UPLOADING_ATTACK": 0.0242,
+      "VULNERABILITYSCAN": 0.0526,
+      "XSS": 0.0073,
+      "nan": 1.0
+    }
+  },
+  "val_metrics": {
+    "accuracy": 0.9790755758214946,
+    "balanced_accuracy": 0.9885588357233324,
+    "macro_f1": 0.8397363445837029,
+    "roc_auc": 0.996202562210014,
+    "attack_recall": 0.9786109185457708,
+    "attack_precision": 0.9999635128948219,
+    "attack_f1": 0.9891719980973982,
+    "benign_recall": 0.9985067529008941,
+    "benign_precision": 0.527483846331635,
+    "benign_f1": 0.6903006910700078,
+    "false_positive_rate": 0.001493247099105954,
+    "false_negative_rate": 0.02138908145422919,
+    "confusion_matrix": {
+      "raw_matrix": [
+        [
+          104983,
+          157
+        ],
+        [
+          94043,
+          4302733
+        ]
+      ],
+      "true_benign_pred_benign": 104983,
+      "true_benign_pred_attack": 157,
+      "true_attack_pred_benign": 94043,
+      "true_attack_pred_attack": 4302733,
+      "tn": 104983,
+      "fp": 157,
+      "fn": 94043,
+      "tp": 4302733
+    },
+    "positive_class": "ATTACK (1)",
+    "negative_class": "BENIGN (0)",
+    "decision_threshold": 0.3565,
+    "sample_count": 4501916
+  },
+  "training_time_seconds": 2051.65,
+  "test_eval_time_seconds": 56.61,
+  "parameter_breakdown": {
+    "classical_encoder": 708,
+    "quantum_circuit": 8,
+    "classical_output_head": 5,
+    "total_trainable": 721
+  },
+  "circuit_metadata": {
+    "type": "DataReuploadingVQC",
+    "n_qubits": 4,
+    "n_layers": 1,
+    "num_parameters": 8,
+    "encoding_gates_per_layer": 4,
+    "trainable_gates_per_layer": 8,
+    "cnot_gates_per_layer": 4,
+    "total_gates": 16,
+    "estimated_circuit_depth": 4
+  },
+  "epoch_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.00337,
+      "val_loss": 0.00227,
+      "val_accuracy": 0.9780024771674993,
+      "val_macro_f1": 0.8341545350991665,
+      "train_duration_s": 492.16,
+      "val_duration_s": 17.74
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.00225,
+      "val_loss": 0.00223,
+      "val_accuracy": 0.9786459809556642,
+      "val_macro_f1": 0.8374913823740708,
+      "train_duration_s": 494.27,
+      "val_duration_s": 18.04
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.00223,
+      "val_loss": 0.00221,
+      "val_accuracy": 0.978909646470525,
+      "val_macro_f1": 0.8389238281709988,
+      "train_duration_s": 496.84,
+      "val_duration_s": 18.07
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.00224,
+      "val_loss": 0.00224,
+      "val_accuracy": 0.9788514490274808,
+      "val_macro_f1": 0.838622269255885,
+      "train_duration_s": 495.87,
+      "val_duration_s": 18.67
+    }
+  ],
+  "checkpoint_path": "results\\ciciot2023_full45m\\controlled_study\\Hybrid_Reuploading_L1_seed123\\best_model.pt",
+  "device_used": "cpu"
+}

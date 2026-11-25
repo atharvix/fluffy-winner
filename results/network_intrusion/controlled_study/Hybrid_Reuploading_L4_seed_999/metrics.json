@@ -1,121 +1,122 @@
 {
-  "test_loss": 0.1790924370288849,
+  "test_loss": 0.30380428571190765,
   "test_metrics": {
-    "accuracy": 0.9188888888888889,
-    "balanced_accuracy": 0.9188552188552188,
-    "macro_f1": 0.9181931264794032,
-    "roc_auc": 0.9831749594712558,
-    "attack_recall": 0.9191919191919192,
-    "attack_precision": 0.9323770491803278,
-    "attack_f1": 0.9257375381485249,
-    "benign_recall": 0.9185185185185185,
-    "benign_precision": 0.9029126213592233,
-    "benign_f1": 0.9106487148102815,
-    "false_positive_rate": 0.08148148148148149,
-    "false_negative_rate": 0.08080808080808081,
+    "accuracy": 0.8890904009900708,
+    "balanced_accuracy": 0.908557491692473,
+    "macro_f1": 0.8800649409466164,
+    "roc_auc": 0.9789691135665267,
+    "attack_recall": 0.8546685548135176,
+    "attack_precision": 0.9797982708933718,
+    "attack_f1": 0.91296583885679,
+    "benign_recall": 0.9624464285714286,
+    "benign_precision": 0.7565446863463455,
+    "benign_f1": 0.8471640430364427,
+    "false_positive_rate": 0.03755357142857143,
+    "false_negative_rate": 0.14533144518648244,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          372,
-          33
+          53897,
+          2103
         ],
         [
-          40,
-          455
+          17344,
+          101997
         ]
       ],
-      "true_benign_pred_benign": 372,
-      "true_benign_pred_attack": 33,
-      "true_attack_pred_benign": 40,
-      "true_attack_pred_attack": 455,
-      "tn": 372,
-      "fp": 33,
-      "fn": 40,
-      "tp": 455
+      "true_benign_pred_benign": 53897,
+      "true_benign_pred_attack": 2103,
+      "true_attack_pred_benign": 17344,
+      "true_attack_pred_attack": 101997,
+      "tn": 53897,
+      "fp": 2103,
+      "fn": 17344,
+      "tp": 101997
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 900
+    "decision_threshold": 0.307,
+    "sample_count": 175341
   },
-  "val_loss": 0.17378894984722137,
+  "val_loss": 0.14795798958231773,
   "val_metrics": {
-    "accuracy": 0.9366666666666666,
-    "balanced_accuracy": 0.9384082561481955,
-    "macro_f1": 0.936270046052035,
-    "roc_auc": 0.9823738422229321,
-    "attack_recall": 0.9213709677419355,
-    "attack_precision": 0.9621052631578947,
-    "attack_f1": 0.94129763130793,
-    "benign_recall": 0.9554455445544554,
-    "benign_precision": 0.908235294117647,
-    "benign_f1": 0.9312424607961399,
-    "false_positive_rate": 0.04455445544554455,
-    "false_negative_rate": 0.07862903225806452,
+    "accuracy": 0.9383341571922886,
+    "balanced_accuracy": 0.9375961003115487,
+    "macro_f1": 0.9340829772527709,
+    "roc_auc": 0.9853801169590642,
+    "attack_recall": 0.9348413234301148,
+    "attack_precision": 0.9004878048780488,
+    "attack_f1": 0.9173430511843631,
+    "benign_recall": 0.9403508771929825,
+    "benign_precision": 0.9615307952959936,
+    "benign_f1": 0.9508229033211787,
+    "false_positive_rate": 0.05964912280701754,
+    "false_negative_rate": 0.06515867656988521,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          386,
-          18
+          4824,
+          306
         ],
         [
-          39,
-          457
+          193,
+          2769
         ]
       ],
-      "true_benign_pred_benign": 386,
-      "true_benign_pred_attack": 18,
-      "true_attack_pred_benign": 39,
-      "true_attack_pred_attack": 457,
-      "tn": 386,
-      "fp": 18,
-      "fn": 39,
-      "tp": 457
+      "true_benign_pred_benign": 4824,
+      "true_benign_pred_attack": 306,
+      "true_attack_pred_benign": 193,
+      "true_attack_pred_attack": 2769,
+      "tn": 4824,
+      "fp": 306,
+      "fn": 193,
+      "tp": 2769
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 900
+    "decision_threshold": 0.307,
+    "sample_count": 8092
   },
-  "train_loss": 0.14149880409240723,
+  "train_loss": 0.1453575826390038,
   "train_metrics": {
-    "accuracy": 0.9521428571428572,
-    "balanced_accuracy": 0.9535242498163075,
-    "macro_f1": 0.9518101147269762,
-    "roc_auc": 0.990202379078552,
-    "attack_recall": 0.9399048854301773,
-    "attack_precision": 0.9722719141323792,
-    "attack_f1": 0.9558144647175203,
-    "benign_recall": 0.9671436142024378,
-    "benign_precision": 0.9292260692464358,
-    "benign_f1": 0.9478057647364321,
-    "false_positive_rate": 0.03285638579756227,
-    "false_negative_rate": 0.06009511456982274,
+    "accuracy": 0.9383696078858987,
+    "balanced_accuracy": 0.937770360849506,
+    "macro_f1": 0.9341371018485783,
+    "roc_auc": 0.985578927856661,
+    "attack_recall": 0.9355338417540515,
+    "attack_precision": 0.9000343918376705,
+    "attack_f1": 0.9174408413672217,
+    "benign_recall": 0.9400068799449605,
+    "benign_precision": 0.9619121374260772,
+    "benign_f1": 0.950833362329935,
+    "false_positive_rate": 0.05999312005503956,
+    "false_negative_rate": 0.06446615824594852,
     "confusion_matrix": {
       "raw_matrix": [
         [
-          1825,
-          62
+          27326,
+          1744
         ],
         [
-          139,
-          2174
+          1082,
+          15702
         ]
       ],
-      "true_benign_pred_benign": 1825,
-      "true_benign_pred_attack": 62,
-      "true_attack_pred_benign": 139,
-      "true_attack_pred_attack": 2174,
-      "tn": 1825,
-      "fp": 62,
-      "fn": 139,
-      "tp": 2174
+      "true_benign_pred_benign": 27326,
+      "true_benign_pred_attack": 1744,
+      "true_attack_pred_benign": 1082,
+      "true_attack_pred_attack": 15702,
+      "tn": 27326,
+      "fp": 1744,
+      "fn": 1082,
+      "tp": 15702
     },
     "positive_class": "ATTACK (1)",
     "negative_class": "BENIGN (0)",
-    "decision_threshold": 0.5,
-    "sample_count": 4200
+    "decision_threshold": 0.307,
+    "sample_count": 45854
   },
-  "best_epoch": 29,
-  "duration_seconds": 63.02851240000018
+  "decision_threshold": 0.307,
+  "best_epoch": 26,
+  "duration_seconds": 263.45332380000036
 }

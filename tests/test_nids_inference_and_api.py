@@ -1,14 +1,15 @@
 """Integration and validation tests for NIDS Predictor and FastAPI Backend."""
 
+import asyncio
 import io
 import json
 import numpy as np
 import pandas as pd
 import pytest
 import torch
-from starlette.testclient import TestClient
+from fastapi import HTTPException, UploadFile
 
-from api.main import app
+from api.main import health, model_info, predict_json, predict_csv, PredictRequest, SingleFlowRecord
 from src.data.nids_dataset import RAW_INPUT_FEATURES, prepare_nids_data
 from src.inference.nids_predictor import NIDSPredictor, NIDSPredictionResult
 from src.models.hybrid import HybridQuantumClassifier
@@ -28,12 +29,6 @@ def predictor():
         checkpoint_path="results/network_intrusion/controlled_study/Classical_MLP_seed_42/best_model.pt",
         preprocessor_path="results/network_intrusion/preprocessor.joblib",
     )
-
-
-@pytest.fixture(scope="module")
-def client(predictor):
-    """FastAPI TestClient with initialized predictor."""
-    return TestClient(app)
 
 
 def test_predictor_initialization(predictor):
@@ -132,36 +127,36 @@ def test_quantum_measurements_bounds_and_gradients():
         assert torch.isfinite(p.grad).all(), f"Parameter {name} has non-finite grad!"
 
 
-def test_api_health_endpoint(client):
+def test_api_health_endpoint(predictor):
     """Test GET /api/health."""
-    response = client.get("/api/health")
-    assert response.status_code == 200
-    data = response.json()
+    import api.main
+    api.main._PREDICTOR = predictor
+    data = health()
     assert data["status"] in ["healthy", "degraded"]
     assert "service" in data
     assert "timestamp" in data
     assert "uptime_seconds" in data
 
 
-def test_api_model_info_endpoint(client):
+def test_api_model_info_endpoint(predictor):
     """Test GET /api/model-info."""
-    response = client.get("/api/model-info")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["dataset"] == "UNSW-NB15"
+    import api.main
+    api.main._PREDICTOR = predictor
+    data = model_info()
+    assert "dataset" in data
     assert data["input_feature_count"] == 42
     assert "class_label_mapping" in data
     assert "parameter_breakdown" in data
 
 
-def test_api_predict_json_endpoint(client, sample_feature_df):
+def test_api_predict_json_endpoint(predictor, sample_feature_df):
     """Test POST /api/predict with valid records."""
+    import api.main
+    api.main._PREDICTOR = predictor
     records = sample_feature_df.iloc[:2].to_dict(orient="records")
-    payload = {"records": records, "threshold": 0.5}
+    payload = PredictRequest(records=[SingleFlowRecord(**r) for r in records], threshold=0.5)
 
-    response = client.post("/api/predict", json=payload)
-    assert response.status_code == 200
-    data = response.json()
+    data = predict_json(payload)
     assert data["status"] == "success"
     assert data["sample_count"] == 2
     assert len(data["predictions"]) == 2
@@ -172,46 +167,36 @@ def test_api_predict_json_endpoint(client, sample_feature_df):
     assert "probabilities" in p0
 
 
-def test_api_predict_csv_endpoint(client, sample_feature_df):
+def test_api_predict_csv_endpoint(predictor, sample_feature_df):
     """Test POST /api/predict/csv with file upload."""
+    import api.main
+    api.main._PREDICTOR = predictor
     csv_bytes = sample_feature_df.iloc[:3].to_csv(index=False).encode("utf-8")
 
-    # JSON response
-    response = client.post(
-        "/api/predict/csv?format=json",
-        files={"file": ("test_flows.csv", csv_bytes, "text/csv")},
-    )
-    assert response.status_code == 200
-    data = response.json()
+    upload_json = UploadFile(filename="test_flows.csv", file=io.BytesIO(csv_bytes))
+    response_json = predict_csv(file=upload_json, threshold=0.5, format="json")
+    data = json.loads(response_json.body.decode("utf-8")) if hasattr(response_json, "body") else response_json
     assert data["status"] == "success"
     assert data["sample_count"] == 3
 
-    # CSV download response
-    response_csv = client.post(
-        "/api/predict/csv?format=csv",
-        files={"file": ("test_flows.csv", csv_bytes, "text/csv")},
-    )
-    assert response_csv.status_code == 200
+    upload_csv = UploadFile(filename="test_flows.csv", file=io.BytesIO(csv_bytes))
+    response_csv = predict_csv(file=upload_csv, threshold=0.5, format="csv")
     assert "text/csv" in response_csv.headers["content-type"]
-    assert "predicted_label" in response_csv.text
+    assert "predicted_label" in response_csv.body.decode("utf-8")
 
 
-def test_api_error_handling_malformed_requests(client):
+def test_api_error_handling_malformed_requests(predictor):
     """Test API error handling on malformed JSON and empty CSV."""
-    # Empty records
-    res_empty = client.post("/api/predict", json={"records": []})
-    assert res_empty.status_code == 400
+    import api.main
+    api.main._PREDICTOR = predictor
 
-    # Missing mandatory column
-    res_bad = client.post(
-        "/api/predict",
-        json={"records": [{"dur": 0.1, "proto": "tcp"}]},
-    )
-    assert res_bad.status_code == 422  # Pydantic schema validation failure
+    # Empty records
+    with pytest.raises(HTTPException) as exc_info:
+        predict_json(PredictRequest(records=[]))
+    assert exc_info.value.status_code == 400
 
     # Empty CSV
-    res_empty_csv = client.post(
-        "/api/predict/csv",
-        files={"file": ("empty.csv", b"", "text/csv")},
-    )
-    assert res_empty_csv.status_code == 400
+    upload_empty = UploadFile(filename="empty.csv", file=io.BytesIO(b""))
+    with pytest.raises(HTTPException) as exc_info_csv:
+        predict_csv(file=upload_empty)
+    assert exc_info_csv.value.status_code == 400

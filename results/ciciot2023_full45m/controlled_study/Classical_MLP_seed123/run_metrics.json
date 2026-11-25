@@ -1,0 +1,171 @@
+{
+  "model_name": "Classical_MLP",
+  "model_family": "classical",
+  "seed": 123,
+  "best_epoch": 1,
+  "best_val_loss": 0.00219,
+  "optimal_threshold": 0.2575,
+  "test_loss": 0.00219,
+  "test_metrics": {
+    "accuracy": 0.9793269445419949,
+    "balanced_accuracy": 0.9886410984345959,
+    "macro_f1": 0.8410781170728195,
+    "roc_auc": 0.9962570300683015,
+    "attack_recall": 0.9788705854632302,
+    "attack_precision": 0.9999611995518665,
+    "attack_f1": 0.9893034994264375,
+    "benign_recall": 0.9984116114059617,
+    "benign_precision": 0.5304968338277583,
+    "benign_f1": 0.6928527347192016,
+    "false_positive_rate": 0.0015883885940383116,
+    "false_negative_rate": 0.021129414536769735,
+    "confusion_matrix": {
+      "raw_matrix": [
+        [
+          209942,
+          334
+        ],
+        [
+          185804,
+          8607814
+        ]
+      ],
+      "true_benign_pred_benign": 209942,
+      "true_benign_pred_attack": 334,
+      "true_attack_pred_benign": 185804,
+      "true_attack_pred_attack": 8607814,
+      "tn": 209942,
+      "fp": 334,
+      "fn": 185804,
+      "tp": 8607814
+    },
+    "positive_class": "ATTACK (1)",
+    "negative_class": "BENIGN (0)",
+    "decision_threshold": 0.2575,
+    "sample_count": 9003894,
+    "per_attack_category_recall": {
+      "BACKDOOR_MALWARE": 0.0683,
+      "BENIGN": 0.9984,
+      "BROWSERHIJACKING": 0.0532,
+      "COMMANDINJECTION": 0.0079,
+      "DDOS-ACK_FRAGMENTATION": 0.9997,
+      "DDOS-HTTP_FLOOD": 0.9984,
+      "DDOS-ICMP_FLOOD": 1.0,
+      "DDOS-ICMP_FRAGMENTATION": 0.9998,
+      "DDOS-PSHACK_FLOOD": 0.9999,
+      "DDOS-RSTFINFLOOD": 1.0,
+      "DDOS-SLOWLORIS": 0.9993,
+      "DDOS-SYNONYMOUSIP_FLOOD": 1.0,
+      "DDOS-SYN_FLOOD": 1.0,
+      "DDOS-TCP_FLOOD": 1.0,
+      "DDOS-UDP_FLOOD": 1.0,
+      "DDOS-UDP_FRAGMENTATION": 0.9997,
+      "DICTIONARYBRUTEFORCE": 0.1619,
+      "DNS_SPOOFING": 0.189,
+      "DOS-HTTP_FLOOD": 0.999,
+      "DOS-SYN_FLOOD": 1.0,
+      "DOS-TCP_FLOOD": 0.9999,
+      "DOS-UDP_FLOOD": 0.9999,
+      "MIRAI-GREETH_FLOOD": 1.0,
+      "MIRAI-GREIP_FLOOD": 1.0,
+      "MIRAI-UDPPLAIN": 0.9999,
+      "MITM-ARPSPOOFING": 0.2232,
+      "RECON-HOSTDISCOVERY": 0.5129,
+      "RECON-OSSCAN": 0.2472,
+      "RECON-PINGSWEEP": 0.0278,
+      "RECON-PORTSCAN": 0.3633,
+      "SQLINJECTION": 0.0059,
+      "UPLOADING_ATTACK": 0.0242,
+      "VULNERABILITYSCAN": 0.0493,
+      "XSS": 0.0146,
+      "nan": 0.6667
+    }
+  },
+  "val_metrics": {
+    "accuracy": 0.9792837094250537,
+    "balanced_accuracy": 0.9887396605812016,
+    "macro_f1": 0.840873521964189,
+    "roc_auc": 0.9962803388304655,
+    "attack_recall": 0.9788203902131926,
+    "attack_precision": 0.9999672382165042,
+    "attack_f1": 0.9892808184658225,
+    "benign_recall": 0.9986589309492105,
+    "benign_precision": 0.5299741067327542,
+    "benign_f1": 0.6924662254625553,
+    "false_positive_rate": 0.0013410690507894235,
+    "false_negative_rate": 0.021179609786807423,
+    "confusion_matrix": {
+      "raw_matrix": [
+        [
+          104999,
+          141
+        ],
+        [
+          93122,
+          4303654
+        ]
+      ],
+      "true_benign_pred_benign": 104999,
+      "true_benign_pred_attack": 141,
+      "true_attack_pred_benign": 93122,
+      "true_attack_pred_attack": 4303654,
+      "tn": 104999,
+      "fp": 141,
+      "fn": 93122,
+      "tp": 4303654
+    },
+    "positive_class": "ATTACK (1)",
+    "negative_class": "BENIGN (0)",
+    "decision_threshold": 0.2575,
+    "sample_count": 4501916
+  },
+  "training_time_seconds": 132.05,
+  "test_eval_time_seconds": 31.12,
+  "parameter_breakdown": {
+    "feature_extractor": 4832,
+    "output_layer": 33,
+    "quantum_circuit": 0,
+    "total_trainable": 4865
+  },
+  "circuit_metadata": {},
+  "epoch_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.00288,
+      "val_loss": 0.00219,
+      "val_accuracy": 0.9771466193505165,
+      "val_macro_f1": 0.829797595318629,
+      "train_duration_s": 26.23,
+      "val_duration_s": 4.56
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.00238,
+      "val_loss": 0.00216,
+      "val_accuracy": 0.978352994591636,
+      "val_macro_f1": 0.8359928074342411,
+      "train_duration_s": 29.74,
+      "val_duration_s": 4.37
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.00238,
+      "val_loss": 0.00217,
+      "val_accuracy": 0.9779180686623207,
+      "val_macro_f1": 0.833752542263932,
+      "train_duration_s": 30.09,
+      "val_duration_s": 4.17
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.00236,
+      "val_loss": 0.00216,
+      "val_accuracy": 0.9775495588989221,
+      "val_macro_f1": 0.8318489378935301,
+      "train_duration_s": 28.84,
+      "val_duration_s": 4.06
+    }
+  ],
+  "checkpoint_path": "results\\ciciot2023_full45m\\controlled_study\\Classical_MLP_seed123\\best_model.pt",
+  "device_used": "cuda"
+}

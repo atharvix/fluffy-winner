@@ -164,6 +164,153 @@ def load_raw_unsw_nb15(
     return df
 
 
+def load_official_unsw_nb15_benchmark(
+    train_path: Union[str, Path] = "data/raw/UNSW_NB15_training-set.csv",
+    test_path: Union[str, Path] = "data/raw/UNSW_NB15_testing-set.csv",
+    val_ratio: float = 0.15,
+    random_seed: int = 42,
+    deduplicate: bool = True,
+    max_categories_per_cat_feature: int = 10,
+) -> NIDSSplits:
+    """
+    Load the official full-scale UNSW-NB15 benchmark partitions without duplicate leakage:
+    - Training file (82,332 rows) is deduplicated if deduplicate=True (removing 28,386 duplicate flow feature
+      rows, leaving 53,946 unique flow records).
+    - Deduplicated training flows are split into train (1 - val_ratio, approx 45,854) and val (val_ratio, approx 8,092)
+      stratified on binary attack label.
+    - Preprocessor (ColumnTransformer: StandardScaler + OneHotEncoder) is fitted STRICTLY on train (zero leakage).
+    - Full official test file (175,341 rows) is transformed via the fitted preprocessor for held-out evaluation.
+
+    Args:
+        train_path: Path to official UNSW-NB15 training CSV.
+        test_path: Path to official UNSW-NB15 testing CSV.
+        val_ratio: Fraction of training set reserved for validation (default 0.15).
+        random_seed: Seed for reproducible stratified train/val splitting.
+        deduplicate: Whether to remove duplicate feature rows from training set prior to splitting.
+        max_categories_per_cat_feature: Max categories per categorical column for OneHotEncoder.
+
+    Returns:
+        NIDSSplits container with full train, val, and test arrays and metadata.
+    """
+    df_train_raw = load_raw_unsw_nb15(train_path)
+    raw_train_rows = len(df_train_raw)
+
+    df_test_raw = load_raw_unsw_nb15(test_path)
+    raw_test_rows = len(df_test_raw)
+
+    if deduplicate:
+        df_train = df_train_raw.drop_duplicates(subset=RAW_INPUT_FEATURES, keep="first").reset_index(drop=True)
+    else:
+        df_train = df_train_raw.reset_index(drop=True)
+
+    n_train_available = len(df_train)
+    indices = np.arange(n_train_available)
+    y_train_full = df_train["label"].to_numpy(dtype=int)
+
+    train_idx, val_idx = train_test_split(
+        indices,
+        test_size=val_ratio,
+        stratify=y_train_full,
+        random_state=random_seed,
+    )
+
+    X_train_raw = df_train.iloc[train_idx][RAW_INPUT_FEATURES].copy().reset_index(drop=True).fillna(0.0)
+    X_val_raw = df_train.iloc[val_idx][RAW_INPUT_FEATURES].copy().reset_index(drop=True).fillna(0.0)
+    X_test_raw = df_test_raw[RAW_INPUT_FEATURES].copy().reset_index(drop=True).fillna(0.0)
+
+    y_train = df_train.iloc[train_idx]["label"].to_numpy(dtype=int)
+    y_val = df_train.iloc[val_idx]["label"].to_numpy(dtype=int)
+    y_test = df_test_raw["label"].to_numpy(dtype=int)
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", StandardScaler(), RAW_NUMERICAL_FEATURES),
+            (
+                "cat",
+                OneHotEncoder(
+                    handle_unknown="ignore",
+                    max_categories=max_categories_per_cat_feature,
+                    sparse_output=False,
+                ),
+                RAW_CATEGORICAL_FEATURES,
+            ),
+        ],
+        remainder="drop",
+    )
+
+    X_train_scaled = preprocessor.fit_transform(X_train_raw)
+    X_val_scaled = preprocessor.transform(X_val_raw)
+    X_test_scaled = preprocessor.transform(X_test_raw)
+
+    encoded_feature_names = list(preprocessor.get_feature_names_out())
+
+    def get_class_counts(labels: np.ndarray) -> Dict[str, int]:
+        return {
+            TARGET_LABEL_MAPPING[cls_id]: int(np.sum(labels == cls_id))
+            for cls_id in TARGET_LABEL_MAPPING
+        }
+
+    sample_counts = {
+        "raw_total_available": int(raw_train_rows + raw_test_rows),
+        "total_selected": int(len(train_idx) + len(val_idx) + len(df_test_raw)),
+        "train": int(len(train_idx)),
+        "val": int(len(val_idx)),
+        "test": int(len(df_test_raw)),
+    }
+
+    class_distribution = {
+        "train": get_class_counts(y_train),
+        "val": get_class_counts(y_val),
+        "test": get_class_counts(y_test),
+        "total": {
+            TARGET_LABEL_MAPPING[0]: int(np.sum(y_train == 0) + np.sum(y_val == 0) + np.sum(y_test == 0)),
+            TARGET_LABEL_MAPPING[1]: int(np.sum(y_train == 1) + np.sum(y_val == 1) + np.sum(y_test == 1)),
+        },
+    }
+
+    dataset_metadata = {
+        "dataset_name": "UNSW-NB15",
+        "provenance": (
+            "Australian Centre for Cyber Security (ACCS), UNSW Canberra. "
+            "Authors: Nour Moustafa and Jill Slay (2015)."
+        ),
+        "train_source_file": str(train_path),
+        "test_source_file": str(test_path),
+        "sample_size": None,
+        "deduplicated": deduplicate,
+        "random_seed": random_seed,
+        "input_feature_count_raw": len(RAW_INPUT_FEATURES),
+        "encoded_feature_dim": int(X_train_scaled.shape[1]),
+        "categorical_columns": RAW_CATEGORICAL_FEATURES,
+        "numerical_columns": RAW_NUMERICAL_FEATURES,
+        "target_mapping": TARGET_LABEL_MAPPING,
+        "positive_class": "ATTACK (1)",
+        "negative_class": "BENIGN (0)",
+    }
+
+    return NIDSSplits(
+        X_train_raw=X_train_raw,
+        X_val_raw=X_val_raw,
+        X_test_raw=X_test_raw,
+        X_train=X_train_scaled.astype(np.float32),
+        X_val=X_val_scaled.astype(np.float32),
+        X_test=X_test_scaled.astype(np.float32),
+        y_train=y_train,
+        y_val=y_val,
+        y_test=y_test,
+        train_indices=train_idx,
+        val_indices=val_idx,
+        test_indices=np.arange(len(df_test_raw)),
+        preprocessor=preprocessor,
+        raw_feature_names=RAW_INPUT_FEATURES,
+        encoded_feature_names=encoded_feature_names,
+        target_names=TARGET_NAMES,
+        sample_counts=sample_counts,
+        class_distribution=class_distribution,
+        dataset_metadata=dataset_metadata,
+    )
+
+
 def prepare_nids_data(
     data_path: Union[str, Path] = "data/raw/UNSW_NB15_training-set.csv",
     sample_size: Optional[int] = 6000,
@@ -173,6 +320,7 @@ def prepare_nids_data(
     random_seed: int = 42,
     deduplicate: bool = False,
     max_categories_per_cat_feature: int = 10,
+    test_path: Optional[Union[str, Path]] = None,
 ) -> NIDSSplits:
     """
     Load UNSW-NB15 dataset, perform stratified train/val/test splitting,
@@ -182,17 +330,34 @@ def prepare_nids_data(
     Args:
         data_path: Path to raw CSV.
         sample_size: If specified, extract a representative stratified subset of this size.
-                     None uses full dataset.
+                     None uses full official dataset.
         train_ratio: Fraction for training split (default 0.70).
         val_ratio: Fraction for validation split (default 0.15).
         test_ratio: Fraction for held-out test split (default 0.15).
         random_seed: Random seed for reproducible splitting.
         deduplicate: Whether to remove duplicate flow feature rows prior to splitting.
         max_categories_per_cat_feature: Max top categories for OneHotEncoder (others infrequent).
+        test_path: Optional path to testing CSV when sample_size is None.
 
     Returns:
         NIDSSplits containing all split arrays, preprocessor, and schema metadata.
     """
+    if sample_size is None:
+        target_test = (
+            Path(test_path)
+            if test_path is not None
+            else Path(data_path).parent / "UNSW_NB15_testing-set.csv"
+        )
+        if target_test.exists():
+            return load_official_unsw_nb15_benchmark(
+                train_path=data_path,
+                test_path=target_test,
+                val_ratio=val_ratio,
+                random_seed=random_seed,
+                deduplicate=deduplicate,
+                max_categories_per_cat_feature=max_categories_per_cat_feature,
+            )
+
     if not np.isclose(train_ratio + val_ratio + test_ratio, 1.0):
         raise ValueError(
             f"Split ratios must sum to 1.0, got {train_ratio} + {val_ratio} + {test_ratio}"

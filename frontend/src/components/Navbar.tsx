@@ -143,7 +143,7 @@ export const Navbar: React.FC = () => {
           style={{
             display: "none",
             alignItems: "center",
-            gap: "4px",
+            gap: "2px",
           }}
         >
           {navLinks.map((link) => {
@@ -157,8 +157,8 @@ export const Navbar: React.FC = () => {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
-                  padding: "6px 10px",
-                  fontSize: "var(--text-sm)",
+                  padding: "5px 9px",
+                  fontSize: "var(--text-xs)",
                   fontWeight: isActive ? 600 : 500,
                   color: isActive ? "var(--accent-primary)" : "var(--text-secondary)",
                   background: isActive ? "var(--bg-surface-2)" : "transparent",
@@ -169,12 +169,41 @@ export const Navbar: React.FC = () => {
                   whiteSpace: "nowrap",
                 }}
               >
-                <Icon size={14} />
+                <Icon size={13} />
                 <span>{link.label}</span>
               </Link>
             );
           })}
         </nav>
+
+        {/* Live Mono Status Strip */}
+        <div
+          className="telemetry-strip"
+          style={{
+            display: "none",
+            alignItems: "center",
+            gap: "8px",
+            padding: "3px 10px",
+            background: "var(--bg-surface-2)",
+            border: "1px solid var(--border-default)",
+            borderRadius: "var(--radius-sm)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
+            color: "var(--text-secondary)",
+            letterSpacing: "0.02em",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span style={{ color: "var(--accent-quantum)", fontWeight: 700 }}>
+            MODEL: {health?.selected_model || "Hybrid_Reuploading_L1"}
+          </span>
+          <span style={{ color: "var(--border-strong)" }}>|</span>
+          <span>DATASET: <strong style={{ color: "var(--text-primary)" }}>CIC-IoT-2023 45M</strong></span>
+          <span style={{ color: "var(--border-strong)" }}>|</span>
+          <span>PARAMS: <strong style={{ color: "var(--text-primary)" }}>721</strong></span>
+          <span style={{ color: "var(--border-strong)" }}>|</span>
+          <span>TAU*: <strong style={{ color: "var(--accent-primary)" }}>0.2971</strong></span>
+        </div>
 
         {/* Actions (Status, Theme, Lang, Mobile Menu) */}
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
@@ -190,21 +219,20 @@ export const Navbar: React.FC = () => {
                 healthStatus === "healthy"
                   ? "var(--status-benign-bg)"
                   : healthStatus === "degraded"
-                  ? "var(--status-warn-bg)"
-                  : "var(--status-attack-bg)",
+                    ? "var(--status-warn-bg)"
+                    : "var(--status-attack-bg)",
               color:
                 healthStatus === "healthy"
                   ? "var(--status-benign)"
                   : healthStatus === "degraded"
-                  ? "var(--status-warn)"
-                  : "var(--status-attack)",
-              border: `1px solid ${
-                healthStatus === "healthy"
+                    ? "var(--status-warn)"
+                    : "var(--status-attack)",
+              border: `1px solid ${healthStatus === "healthy"
                   ? "var(--status-benign-border)"
                   : healthStatus === "degraded"
-                  ? "var(--status-warn-border)"
-                  : "var(--status-attack-border)"
-              }`,
+                    ? "var(--status-warn-border)"
+                    : "var(--status-attack-border)"
+                }`,
               fontSize: "var(--text-2xs)",
               fontFamily: "var(--font-mono)",
               fontWeight: 700,
@@ -216,8 +244,8 @@ export const Navbar: React.FC = () => {
               {healthStatus === "healthy"
                 ? t.statusBackendReady
                 : healthStatus === "degraded"
-                ? t.statusDegraded
-                : t.statusBackendOffline}
+                  ? t.statusDegraded
+                  : t.statusBackendOffline}
             </span>
           </div>
 
@@ -323,6 +351,11 @@ export const Navbar: React.FC = () => {
           }
           .mobile-menu-btn {
             display: none !important;
+          }
+        }
+        @media (min-width: 1260px) {
+          .telemetry-strip {
+            display: inline-flex !important;
           }
         }
         @media (min-width: 640px) {

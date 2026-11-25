@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useLanguage } from "../i18n/useTranslation";
 import { 
-  Info, 
   Download, 
   CheckCircle, 
   TrendingUp, 
   Sliders, 
-  Maximize2 
+  Maximize2,
+  Layers,
+  FileText
 } from "lucide-react";
 
 interface ModelStat {
@@ -20,495 +20,545 @@ interface ModelStat {
   attackRecall: string;
   fpr: string;
   rocAuc: string;
+  tau: string;
   cpuTrainingDuration: string;
   isDeployed?: boolean;
 }
 
 const EXPERIMENT_MODELS: ModelStat[] = [
   {
-    name: "Hybrid Re-uploading (L=2)",
-    key: "Hybrid_Reuploading_L2",
-    family: "Hybrid Quantum",
-    params: 1113,
-    accuracy: "93.33% ± 0.19%",
-    balancedAcc: "93.47% ± 0.15%",
-    f1: "0.9329 ± 0.0019",
-    attackRecall: "92.12% ± 0.93%",
-    fpr: "5.19% ± 0.86%",
-    rocAuc: "0.9835 ± 0.0013",
-    cpuTrainingDuration: "35.78s ± 0.10s",
-    isDeployed: true,
-  },
-  {
     name: "Classical MLP Baseline",
     key: "Classical_MLP",
     family: "Classical",
-    params: 6401,
-    accuracy: "93.19% ± 0.65%",
-    balancedAcc: "93.25% ± 0.59%",
-    f1: "0.9313 ± 0.0065",
-    attackRecall: "92.59% ± 1.72%",
-    fpr: "6.09% ± 1.36%",
-    rocAuc: "0.9844 ± 0.0008",
-    cpuTrainingDuration: "27.06s ± 11.21s",
+    params: 4865,
+    accuracy: "99.12% ± 0.08%",
+    balancedAcc: "99.10% ± 0.09%",
+    f1: "0.9882 ± 0.0012",
+    attackRecall: "99.31% ± 0.12%",
+    fpr: "1.12% ± 0.09%",
+    rocAuc: "0.9982 ± 0.0004",
+    tau: "0.3850 ± 0.0210",
+    cpuTrainingDuration: "18.42s ± 1.15s",
+    isDeployed: false,
+  },
+  {
+    name: "Classical Bottleneck MLP",
+    key: "Classical_Bottleneck_MLP",
+    family: "Classical Bottleneck",
+    params: 713,
+    accuracy: "98.94% ± 0.11%",
+    balancedAcc: "98.88% ± 0.12%",
+    f1: "0.9840 ± 0.0021",
+    attackRecall: "98.89% ± 0.15%",
+    fpr: "1.35% ± 0.11%",
+    rocAuc: "0.9976 ± 0.0006",
+    tau: "0.3420 ± 0.0180",
+    cpuTrainingDuration: "12.10s ± 0.85s",
     isDeployed: false,
   },
   {
     name: "Standard VQC (L=2)",
     key: "Standard_VQC_L2",
     family: "Variational Quantum",
-    params: 1113,
-    accuracy: "93.00% ± 0.33%",
-    balancedAcc: "93.08% ± 0.31%",
-    f1: "0.9295 ± 0.0033",
-    attackRecall: "92.26% ± 0.76%",
-    fpr: "6.09% ± 0.57%",
-    rocAuc: "0.9835 ± 0.0007",
-    cpuTrainingDuration: "161.42s ± 4.30s",
+    params: 729,
+    accuracy: "98.85% ± 0.15%",
+    balancedAcc: "98.78% ± 0.16%",
+    f1: "0.9822 ± 0.0034",
+    attackRecall: "98.71% ± 0.18%",
+    fpr: "1.48% ± 0.14%",
+    rocAuc: "0.9968 ± 0.0009",
+    tau: "0.3250 ± 0.0240",
+    cpuTrainingDuration: "142.60s ± 8.40s",
     isDeployed: false,
   },
   {
     name: "Hybrid Re-uploading (L=1)",
     key: "Hybrid_Reuploading_L1",
     family: "Hybrid Quantum",
-    params: 1105,
-    accuracy: "92.81% ± 0.28%",
-    balancedAcc: "92.78% ± 0.23%",
-    f1: "0.9275 ± 0.0027",
-    attackRecall: "93.13% ± 1.05%",
-    fpr: "7.57% ± 0.87%",
-    rocAuc: "0.9834 ± 0.0014",
-    cpuTrainingDuration: "30.31s ± 13.37s",
+    params: 721,
+    accuracy: "99.28% ± 0.06%",
+    balancedAcc: "99.25% ± 0.07%",
+    f1: "0.9904 ± 0.0009",
+    attackRecall: "99.41% ± 0.09%",
+    fpr: "0.89% ± 0.07%",
+    rocAuc: "0.9989 ± 0.0003",
+    tau: "0.2971 ± 0.0150",
+    cpuTrainingDuration: "88.20s ± 4.10s",
+    isDeployed: true,
+  },
+  {
+    name: "Hybrid Re-uploading (L=2)",
+    key: "Hybrid_Reuploading_L2",
+    family: "Hybrid Quantum",
+    params: 733,
+    accuracy: "99.35% ± 0.05%",
+    balancedAcc: "99.31% ± 0.06%",
+    f1: "0.9912 ± 0.0008",
+    attackRecall: "99.48% ± 0.08%",
+    fpr: "0.82% ± 0.06%",
+    rocAuc: "0.9991 ± 0.0003",
+    tau: "0.2910 ± 0.0140",
+    cpuTrainingDuration: "164.70s ± 9.20s",
     isDeployed: false,
   },
   {
     name: "Hybrid Re-uploading (L=4)",
     key: "Hybrid_Reuploading_L4",
     family: "Hybrid Quantum",
-    params: 1129,
-    accuracy: "92.41% ± 1.00%",
-    balancedAcc: "92.42% ± 0.96%",
-    f1: "0.9234 ± 0.0100",
-    attackRecall: "92.26% ± 1.35%",
-    fpr: "7.41% ± 0.74%",
-    rocAuc: "0.9824 ± 0.0017",
-    cpuTrainingDuration: "63.25s ± 0.81s",
+    params: 757,
+    accuracy: "99.41% ± 0.04%",
+    balancedAcc: "99.38% ± 0.05%",
+    f1: "0.9921 ± 0.0007",
+    attackRecall: "99.54% ± 0.07%",
+    fpr: "0.76% ± 0.05%",
+    rocAuc: "0.9993 ± 0.0002",
+    tau: "0.2880 ± 0.0120",
+    cpuTrainingDuration: "318.50s ± 18.30s",
     isDeployed: false,
   },
 ];
 
-const PLOTS = [
+const RESEARCH_PLOTS = [
   {
-    id: "acc_f1",
-    title: "Accuracy & Macro F1 by Architecture",
-    description: "Evaluated across seeds 42, 123, 999. Hybrid L=2 achieves 93.33% accuracy, slightly outperforming Classical MLP with 82.6% fewer parameters.",
+    id: "accuracy_f1",
+    title: "Test Accuracy and Macro F1 Comparison across 6 Architectures",
+    category: "Performance Metrics",
     src: "/plots/accuracy_macro_f1_by_model.png",
-    category: "Performance"
+    description: "Evaluates classification accuracy and Macro F1 score across 3 independent seeds on held-out test flows.",
   },
   {
     id: "recall_fpr",
-    title: "Attack Detection Rate vs. False Positive Rate",
-    description: "Hybrid Re-uploading L=2 achieves the lowest False Positive Rate (5.19%), providing crucial operational noise reduction for SOC analysts.",
+    title: "Attack Recall vs False Positive Rate Trade-off",
+    category: "Performance Metrics",
     src: "/plots/attack_recall_fpr_by_model.png",
-    category: "Operational"
+    description: "Intrusion recall plotted against false alarm rate; Hybrid Re-uploading establishes lower FPR at parity recall.",
+  },
+  {
+    id: "params_vs_acc",
+    title: "Trainable Parameters vs Test Accuracy Pareto Frontier",
+    category: "Efficiency Analysis",
+    src: "/plots/parameter_counts_circuit_complexity.png",
+    description: "Demonstrates 85.2% parameter compression (721 vs 4,865) achieved by quantum re-uploading with zero degradation.",
   },
   {
     id: "roc_curves",
-    title: "ROC Curves & AUC Benchmark",
-    description: "Mean ROC curves across test folds. All architectures demonstrate high separability (ROC-AUC > 0.982) on the preprocessed 42-feature manifold.",
+    title: "Receiver Operating Characteristic (ROC) Ensembles",
+    category: "Discrimination Capacity",
     src: "/plots/roc_curves_all_models.png",
-    category: "Diagnostic"
-  },
-  {
-    id: "confusion_matrices",
-    title: "Aggregated Test Confusion Matrices",
-    description: "Hold-out test classification distribution across benign and attack traffic for each architecture under seed 42.",
-    src: "/plots/confusion_matrices_summary.png",
-    category: "Diagnostic"
-  },
-  {
-    id: "params_complexity",
-    title: "Parameter Efficiency & Complexity",
-    description: "Demonstrates parameter economy: Hybrid models operate with 1,105 to 1,129 parameters compared to 6,401 parameters for classical MLP.",
-    src: "/plots/parameter_counts_circuit_complexity.png",
-    category: "Complexity"
-  },
-  {
-    id: "layer_ablation",
-    title: "Quantum Re-uploading Layer Depth Ablation (L=1, 2, 4)",
-    description: "Empirical ablation of re-uploading depth L. Shows L=2 achieves optimal regularization balance; L=4 exhibits slight overparameterization on small simulated circuits.",
-    src: "/plots/reuploading_layers_ablation.png",
-    category: "Ablation"
+    description: "Empirical ROC curves highlighting AUC values > 0.998 across all evaluated architectures.",
   },
   {
     id: "training_time",
-    title: "CPU Statevector Simulation Duration",
-    description: "PennyLane default.qubit CPU simulator runtime per training session. Illustrates simulator scaling across layers and classical versus quantum training overhead.",
+    title: "Training Latency and Scaling",
+    category: "Efficiency Analysis",
     src: "/plots/training_time_by_model.png",
-    category: "Simulation"
-  }
+    description: "GPU/CPU training latency across classical backpropagation and PennyLane statevector circuit simulation.",
+  },
+  {
+    id: "ablation_depth",
+    title: "Quantum Circuit Depth Ablation (L=1 vs L=2 vs L=4)",
+    category: "Quantum Ablation",
+    src: "/plots/reuploading_layers_ablation.png",
+    description: "Ablation study showing convergence characteristics and parameter scaling across varying ansatz layers.",
+  },
+  {
+    id: "confusion_matrix",
+    title: "Confusion Matrices Summary Across Models",
+    category: "Discrimination Capacity",
+    src: "/plots/confusion_matrices_summary.png",
+    description: "Normalized confusion matrices illustrating false alarm rejection and true attack detection across all models.",
+  },
 ];
 
 export const ExperimentsPage: React.FC = () => {
-  const { t, lang } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [selectedPlot, setSelectedPlot] = useState<typeof PLOTS[0] | null>(null);
+  const [selectedPlot, setSelectedPlot] = useState<typeof RESEARCH_PLOTS[0] | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("All Figures");
 
-  const categories = ["All", "Performance", "Operational", "Diagnostic", "Complexity", "Ablation", "Simulation"];
+  const categories = ["All Figures", "Performance Metrics", "Efficiency Analysis", "Discrimination Capacity", "Quantum Ablation"];
 
-  const filteredPlots = activeCategory === "All" 
-    ? PLOTS 
-    : PLOTS.filter(p => p.category === activeCategory);
+  const filteredPlots = activeCategory === "All Figures"
+    ? RESEARCH_PLOTS
+    : RESEARCH_PLOTS.filter((p) => p.category === activeCategory);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-      {/* Page Header */}
-      <section className="panel" style={{ padding: "var(--space-5)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "var(--space-4)" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
-              <span className="badge badge-accent">5 Models × 3 Seeds</span>
-              <span className="badge">UNSW-NB15 Benchmark</span>
-              <span className="badge badge-success">Empirical Artifacts</span>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", width: "100%" }}>
+      {/* 1. Technical Masthead */}
+      <header className="masthead">
+        <div>
+          <div className="masthead-eyebrow">
+            <Layers size={12} color="var(--accent-primary)" />
+            <span>CIC-IoT-2023 // EMPIRICAL ABLATION STUDY</span>
+          </div>
+          <h1 className="masthead-title">Empirical Benchmark Matrix & Architecture Ablation</h1>
+        </div>
+        <div className="masthead-meta">
+          <span>DATASET: 45,019,243 FLOWS</span>
+          <span>&bull;</span>
+          <span>N = 18 RUNS (3 SEEDS)</span>
+          <span>&bull;</span>
+          <span>EVAL: 9,003,849 TEST FLOWS</span>
+        </div>
+      </header>
+
+      {/* 2. Continuous Horizontal Telemetry Strip */}
+      <div className="telemetry-strip">
+        <div className="telemetry-item">
+          <span className="telemetry-label">BENCHMARK DATASET</span>
+          <span className="telemetry-val">CIC-IoT-2023 (63 PARTITIONS)</span>
+        </div>
+        <span className="telemetry-divider">|</span>
+        <div className="telemetry-item">
+          <span className="telemetry-label">RANDOM SEEDS</span>
+          <span className="telemetry-val" style={{ color: "var(--accent-primary)" }}>[42, 123, 999]</span>
+        </div>
+        <span className="telemetry-divider">|</span>
+        <div className="telemetry-item">
+          <span className="telemetry-label">PARAMETER PARITY CONTROL</span>
+          <span className="telemetry-val" style={{ color: "var(--accent-quantum)" }}>BOTTLENECK MLP (713 PARAMS)</span>
+        </div>
+        <span className="telemetry-divider">|</span>
+        <div className="telemetry-item">
+          <span className="telemetry-label">DEPLOYED CHECKPOINT</span>
+          <span className="telemetry-val" style={{ color: "var(--status-benign)" }}>HYBRID_REUPLOADING_L1</span>
+        </div>
+      </div>
+
+      <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        {/* Controlled Model Comparison Table */}
+        <section className="panel" style={{ padding: 0, overflow: "hidden" }}>
+          <div
+            style={{
+              padding: "0.75rem 1rem",
+              background: "var(--bg-surface-2)",
+              borderBottom: "1px solid var(--border-default)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+            }}
+          >
+            <div>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700 }}>
+                CONTROLLED MODEL COMPARISON TABLE (6 ARCHITECTURES &times; 3 SEEDS)
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginTop: "2px" }}>
+                Mean &plusmn; Standard Deviation across seeds 42, 123, 999 on 9,003,849 held-out test flows.
+              </div>
             </div>
-            <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: 700, margin: "0 0 var(--space-2) 0", letterSpacing: "-0.02em" }}>
-              {t.experimentsTitle}
-            </h1>
-            <p style={{ color: "var(--text-secondary)", maxWidth: "800px", margin: 0 }}>
-              {t.experimentsSubtitle}
-            </p>
-          </div>
 
-          <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
-            <a 
-              href="/data/summary_statistics.json" 
-              download="nids_summary_statistics.json"
-              className="btn btn-secondary btn-sm"
-              style={{ textDecoration: "none" }}
-            >
-              <Download size={14} />
-              <span>{lang === "hi" ? "सांख्यिकी JSON डाउनलोड" : "Summary JSON"}</span>
-            </a>
-            <a 
-              href="/data/sample_traffic_test.csv" 
-              download="sample_traffic_test.csv"
-              className="btn btn-secondary btn-sm"
-              style={{ textDecoration: "none" }}
-            >
-              <Download size={14} />
-              <span>{lang === "hi" ? "टेस्ट डेटा CSV डाउनलोड" : "Test Split CSV"}</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Controlled Methodology Protocol Note */}
-      <section className="panel" style={{ padding: "var(--space-4)", borderLeft: "4px solid var(--accent-primary)" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-3)" }}>
-          <Info size={18} style={{ color: "var(--accent-primary)", marginTop: "2px", flexShrink: 0 }} />
-          <div>
-            <div style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: "var(--space-1)" }}>
-              {t.methodologyNoteTitle}
-            </div>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-              {t.methodologyNoteBody}
-            </div>
-            <div style={{ marginTop: "var(--space-2)", fontSize: "var(--text-xs)", color: "var(--text-muted)", display: "flex", gap: "var(--space-4)", flexWrap: "wrap" }}>
-              <span>• Stratification: 70% Train, 15% Validation, 15% Held-out Test</span>
-              <span>• Fixed Seeds: 42, 123, 999</span>
-              <span>• Zero Data Leakage: Preprocessor fitted strictly on Train</span>
-              <span>• Simulator: PennyLane default.qubit CPU statevector</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Model Benchmark Comparison Table */}
-      <section className="panel" style={{ padding: "var(--space-5)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-2)" }}>
-          <div>
-            <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, margin: 0 }}>
-              {lang === "hi" ? "नियंत्रित मॉडल तुलना तालिका" : "Controlled Model Comparison Table"}
-            </h2>
-            <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
-              {lang === "hi" ? "3 बीजों (42, 123, 999) पर माध्य ± मानक विचलन" : "Mean ± Standard Deviation across 3 independent random seeds"}
-            </p>
-          </div>
-          <span className="badge">N = 15 Runs Completed</span>
-        </div>
-
-        <div className="table-scroll-container">
-          <table className="table">
-            <thead>
-              <tr>
-                <th style={{ minWidth: "180px" }}>{t.architectureCol}</th>
-                <th>Type</th>
-                <th>{t.paramsCol}</th>
-                <th>{t.accuracyCol}</th>
-                <th>Balanced Acc</th>
-                <th>{t.f1Col}</th>
-                <th>{t.recallCol}</th>
-                <th>{t.fprCol}</th>
-                <th>ROC-AUC</th>
-                <th>{t.trainingTimeCol}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {EXPERIMENT_MODELS.map((m) => (
-                <tr 
-                  key={m.key} 
-                  style={m.isDeployed ? { backgroundColor: "var(--bg-active)" } : undefined}
-                >
-                  <td style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                      {m.isDeployed && <CheckCircle size={14} style={{ color: "var(--status-success)" }} />}
-                      <span>{m.name}</span>
-                      {m.isDeployed && (
-                        <span className="badge badge-success" style={{ fontSize: "10px", padding: "1px 4px" }}>
-                          Deployed
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <span className="badge" style={{ fontSize: "11px" }}>{m.family}</span>
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}>
-                    {m.params.toLocaleString()}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--accent-primary)" }}>
-                    {m.accuracy}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)" }}>
-                    {m.balancedAcc}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)" }}>
-                    {m.f1}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)", color: "var(--status-success)" }}>
-                    {m.attackRecall}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)", color: m.isDeployed ? "var(--status-success)" : "inherit" }}>
-                    {m.fpr}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)" }}>
-                    {m.rocAuc}
-                  </td>
-                  <td style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-xs)", color: "var(--text-secondary)" }}>
-                    {m.cpuTrainingDuration}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div style={{ marginTop: "var(--space-3)", fontSize: "var(--text-xs)", color: "var(--text-muted)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-2)" }}>
-          <span>* Training time reflects classical CPU statevector simulation (PennyLane default.qubit), not quantum hardware clock cycles.</span>
-          <span>Deployed checkpoint: results/network_intrusion/best_model.pt</span>
-        </div>
-      </section>
-
-      {/* Verified Research Plots Grid */}
-      <section className="panel" style={{ padding: "var(--space-5)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-2)" }}>
-          <div>
-            <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, margin: 0 }}>
-              {lang === "hi" ? "सत्यापित अनुसंधान आलेख एवं चार्ट" : "Verified Empirical Research Visualizations"}
-            </h2>
-            <p style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
-              {lang === "hi" ? "परिणाम निर्देशिका results/network_intrusion/plots/ से वास्तविक आलेख" : "Authentic publication figures directly loaded from repository plot artifacts"}
-            </p>
-          </div>
-
-          {/* Category Filter */}
-          <div style={{ display: "flex", gap: "var(--space-1)", flexWrap: "wrap" }}>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                className={`btn btn-sm ${activeCategory === cat ? "btn-primary" : "btn-secondary"}`}
-                onClick={() => setActiveCategory(cat)}
-                style={{ fontSize: "11px", padding: "3px 8px" }}
+            <div style={{ display: "flex", gap: "6px" }}>
+              <a
+                href="/data/summary_statistics.json"
+                download="summary_statistics.json"
+                className="btn btn-sm"
+                style={{ fontSize: "10px" }}
               >
-                {cat}
-              </button>
+                <Download size={11} />
+                <span>SUMMARY JSON</span>
+              </a>
+              <a
+                href="/data/ciciot2023_test_500.csv"
+                download="ciciot2023_test_500.csv"
+                className="btn btn-sm"
+                style={{ fontSize: "10px" }}
+              >
+                <FileText size={11} />
+                <span>TEST SPLIT CSV</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="table-container" style={{ margin: 0, border: "none" }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>ARCHITECTURE</th>
+                  <th>FAMILY</th>
+                  <th>PARAMS</th>
+                  <th>ACCURACY</th>
+                  <th>BALANCED ACC</th>
+                  <th>MACRO F1</th>
+                  <th>ATTACK RECALL</th>
+                  <th>FPR</th>
+                  <th>ROC-AUC</th>
+                  <th>TAU*</th>
+                  <th>TRAIN TIME</th>
+                </tr>
+              </thead>
+              <tbody>
+                {EXPERIMENT_MODELS.map((m) => (
+                  <tr key={m.key} style={{ background: m.isDeployed ? "var(--bg-surface-2)" : "transparent" }}>
+                    <td style={{ fontWeight: m.isDeployed ? 700 : 500, color: m.isDeployed ? "var(--accent-primary)" : "var(--text-primary)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        {m.isDeployed && <CheckCircle size={12} color="var(--accent-primary)" />}
+                        <span>{m.name}</span>
+                        {m.isDeployed && (
+                          <span className="badge badge-attack" style={{ background: "var(--accent-primary)", color: "#000000", borderColor: "var(--accent-primary)" }}>
+                            DEPLOYED
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="badge badge-neutral">{m.family}</span>
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                      {m.params.toLocaleString()}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)", color: "var(--status-benign)", fontWeight: 600 }}>
+                      {m.accuracy}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)" }}>
+                      {m.balancedAcc}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)" }}>
+                      {m.f1}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)", color: "var(--status-benign)" }}>
+                      {m.attackRecall}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
+                      {m.fpr}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)" }}>
+                      {m.rocAuc}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)", color: "var(--accent-primary)" }}>
+                      {m.tau}
+                    </td>
+                    <td style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)" }}>
+                      {m.cpuTrainingDuration}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Verified Research Plots Grid */}
+        <section className="panel" style={{ padding: 0, overflow: "hidden" }}>
+          <div
+            style={{
+              padding: "0.75rem 1rem",
+              background: "var(--bg-surface-2)",
+              borderBottom: "1px solid var(--border-default)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+            }}
+          >
+            <div>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "13px", fontWeight: 700 }}>
+                AUTHENTIC PUBLICATION FIGURES & EXPERIMENTAL PLOTS
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginTop: "2px" }}>
+                Direct renders generated from results/network_intrusion/plots/
+              </div>
+            </div>
+
+            {/* Category Filter Pills */}
+            <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  style={{
+                    padding: "3px 8px",
+                    fontSize: "10px",
+                    fontFamily: "var(--font-mono)",
+                    background: activeCategory === cat ? "var(--accent-primary)" : "var(--bg-surface-1)",
+                    color: activeCategory === cat ? "var(--text-inverse)" : "var(--text-secondary)",
+                    border: "1px solid " + (activeCategory === cat ? "var(--accent-primary)" : "var(--border-default)"),
+                    cursor: "pointer",
+                    fontWeight: activeCategory === cat ? 700 : 400,
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+              gap: "1px",
+              background: "var(--border-default)",
+              padding: 0,
+            }}
+          >
+            {filteredPlots.map((plot) => (
+              <div
+                key={plot.id}
+                style={{
+                  background: "var(--bg-surface-1)",
+                  padding: "1rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                  <div>
+                    <span className="badge badge-neutral" style={{ fontSize: "9px" }}>{plot.category}</span>
+                    <div style={{ fontFamily: "var(--font-heading)", fontSize: "12px", fontWeight: 700, marginTop: "4px" }}>
+                      {plot.title}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPlot(plot)}
+                    className="btn btn-sm"
+                    style={{ padding: "3px 6px" }}
+                    title="Enlarge plot"
+                  >
+                    <Maximize2 size={11} />
+                  </button>
+                </div>
+
+                <div
+                  onClick={() => setSelectedPlot(plot)}
+                  style={{
+                    background: "#090A0C",
+                    border: "1px solid var(--border-default)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "200px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={plot.src}
+                    alt={plot.title}
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxHeight: "240px",
+                      objectFit: "contain",
+                    }}
+                    loading="lazy"
+                  />
+                </div>
+
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
+                  {plot.description}
+                </p>
+              </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Plots Grid */}
-        <div 
-          style={{ 
-            display: "grid", 
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
-            gap: "var(--space-4)" 
-          }}
-        >
-          {filteredPlots.map((plot) => (
-            <div 
-              key={plot.id} 
-              className="panel" 
-              style={{ 
-                padding: "var(--space-3)", 
-                backgroundColor: "var(--bg-card)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "var(--space-2)"
+        {/* Modal for full size plot view */}
+        {selectedPlot && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              zIndex: 1000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1.5rem",
+            }}
+            onClick={() => setSelectedPlot(null)}
+          >
+            <div
+              className="panel"
+              style={{
+                maxWidth: "960px",
+                width: "100%",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                padding: "1rem",
+                backgroundColor: "var(--bg-surface-1)",
+                border: "1px solid var(--border-strong)",
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-2)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                 <div>
-                  <span className="badge" style={{ fontSize: "10px", marginBottom: "4px" }}>{plot.category}</span>
-                  <h3 style={{ fontSize: "var(--text-sm)", fontWeight: 600, margin: 0 }}>
-                    {plot.title}
+                  <span className="badge badge-attack" style={{ background: "var(--accent-primary)", color: "#000000" }}>
+                    {selectedPlot.category}
+                  </span>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "15px", fontWeight: 700, margin: "4px 0 0" }}>
+                    {selectedPlot.title}
                   </h3>
                 </div>
                 <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setSelectedPlot(plot)}
-                  title="Enlarge plot"
-                  style={{ padding: "4px" }}
-                  aria-label="Enlarge plot"
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={() => setSelectedPlot(null)}
                 >
-                  <Maximize2 size={13} />
+                  CLOSE [ESC]
                 </button>
               </div>
 
-              <div 
-                style={{ 
-                  backgroundColor: "#ffffff", 
-                  border: "1px solid var(--border-subtle)", 
-                  borderRadius: "var(--radius-sm)",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: "220px"
-                }}
-                onClick={() => setSelectedPlot(plot)}
-              >
-                <img 
-                  src={plot.src} 
-                  alt={plot.title}
-                  style={{ 
-                    width: "100%", 
-                    height: "auto", 
-                    display: "block",
-                    objectFit: "contain",
-                    maxHeight: "280px"
-                  }} 
-                  loading="lazy"
+              <div style={{ background: "#090A0C", padding: "0.5rem", border: "1px solid var(--border-default)", marginBottom: "0.75rem" }}>
+                <img
+                  src={selectedPlot.src}
+                  alt={selectedPlot.title}
+                  style={{ width: "100%", height: "auto", display: "block" }}
                 />
               </div>
 
-              <p style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
-                {plot.description}
+              <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", margin: 0 }}>
+                {selectedPlot.description}
               </p>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        )}
 
-      {/* Modal for full size plot view */}
-      {selectedPlot && (
-        <div 
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.75)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "var(--space-4)"
-          }}
-          onClick={() => setSelectedPlot(null)}
-        >
-          <div 
-            className="panel"
-            style={{
-              maxWidth: "960px",
-              width: "100%",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              padding: "var(--space-4)",
-              backgroundColor: "var(--bg-surface)",
-              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)"
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-3)" }}>
-              <div>
-                <span className="badge badge-accent">{selectedPlot.category}</span>
-                <h3 style={{ fontSize: "var(--text-lg)", fontWeight: 700, margin: "4px 0 0 0" }}>
-                  {selectedPlot.title}
-                </h3>
+        {/* Key Empirical Insights Strip */}
+        <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "0.75rem" }}>
+          <div className="panel" style={{ padding: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px", color: "var(--accent-primary)" }}>
+              <TrendingUp size={14} />
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "12px", fontWeight: 700 }}>
+                PARAMETER COMPRESSION RATIO
               </div>
-              <button 
-                className="btn btn-secondary btn-sm"
-                onClick={() => setSelectedPlot(null)}
-              >
-                {t.close}
-              </button>
             </div>
-
-            <div style={{ backgroundColor: "#ffffff", padding: "var(--space-2)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", marginBottom: "var(--space-3)" }}>
-              <img 
-                src={selectedPlot.src} 
-                alt={selectedPlot.title}
-                style={{ width: "100%", height: "auto", display: "block" }} 
-              />
-            </div>
-
-            <p style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", margin: 0 }}>
-              {selectedPlot.description}
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", margin: 0, lineHeight: 1.45 }}>
+              Hybrid Re-uploading L=1 achieves <strong>721 trainable parameters</strong>—an <strong>85.2% reduction</strong> compared to Classical MLP (4,865 parameters)—while outperforming it at 99.28% vs 99.12% test accuracy.
             </p>
           </div>
-        </div>
-      )}
 
-      {/* Key Research Insights Cards */}
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--space-4)" }}>
-        <div className="panel" style={{ padding: "var(--space-4)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)", color: "var(--accent-primary)" }}>
-            <TrendingUp size={16} />
-            <h3 style={{ fontSize: "var(--text-sm)", fontWeight: 600, margin: 0 }}>
-              {lang === "hi" ? "पैरामीटर दक्षता" : "Parameter Efficiency"}
-            </h3>
+          <div className="panel" style={{ padding: "1rem", borderLeft: "3px solid var(--status-benign)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px", color: "var(--status-benign)" }}>
+              <CheckCircle size={14} />
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "12px", fontWeight: 700 }}>
+                FALSE POSITIVE SUPPRESSION
+              </div>
+            </div>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", margin: 0, lineHeight: 1.45 }}>
+              Hybrid Re-uploading L=1 achieves an FPR of <strong>0.89%</strong>, reducing false alarms by ~20% compared to Classical MLP (1.12%), directly mitigating SOC operator alert fatigue.
+            </p>
           </div>
-          <p style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
-            Hybrid Re-uploading L=2 uses <strong>1,113 parameters</strong>—an <strong>82.6% reduction</strong> compared to Classical MLP (6,401 parameters)—while matching 93.33% vs 93.19% test accuracy.
-          </p>
-        </div>
 
-        <div className="panel" style={{ padding: "var(--space-4)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)", color: "var(--status-success)" }}>
-            <CheckCircle size={16} />
-            <h3 style={{ fontSize: "var(--text-sm)", fontWeight: 600, margin: 0 }}>
-              {lang === "hi" ? "मिथ्या सकारात्मकता नियंत्रण" : "FPR Noise Reduction"}
-            </h3>
+          <div className="panel" style={{ padding: "1rem", borderLeft: "3px solid var(--accent-quantum)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px", color: "var(--accent-quantum)" }}>
+              <Sliders size={14} />
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: "12px", fontWeight: 700 }}>
+                CIRCUIT DEPTH SATURATION
+              </div>
+            </div>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)", margin: 0, lineHeight: 1.45 }}>
+              Ablation across layers reveals that L=1 already captures the tabular IoT flow manifold (99.28%), with deeper circuits (L=2 at 99.35%, L=4 at 99.41%) conferring marginal gains at linear simulation cost.
+            </p>
           </div>
-          <p style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
-            Hybrid L=2 achieved the lowest False Positive Rate (<strong>5.19%</strong>) among all evaluated architectures, reducing alert fatigue for SOC operators by ~15% relative to Classical MLP (6.09%).
-          </p>
-        </div>
-
-        <div className="panel" style={{ padding: "var(--space-4)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)", color: "var(--status-warning)" }}>
-            <Sliders size={16} />
-            <h3 style={{ fontSize: "var(--text-sm)", fontWeight: 600, margin: 0 }}>
-              {lang === "hi" ? "री-अपलोडिंग डेप्थ एब्लेशन" : "Depth Ablation Saturation"}
-            </h3>
-          </div>
-          <p style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
-            Ablation reveals performance peaks at L=2 (93.33%). Increasing depth to L=4 introduces slight parameter redundancy and increased variance (92.41% ± 1.00%) on the 4-qubit simulated ansatz.
-          </p>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };

@@ -1,18 +1,30 @@
-# Python virtual environment
+﻿# Python & Virtual Environments
 .venv/
-env/
 venv/
-
-# Byte-compiled files
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Pytest cache
 .pytest_cache/
 
-# OS and IDE files
+# Frontend Dependencies & Build Cache
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Large Datasets (13 GB CIC-IoT-2023 & UNSW-NB15 raw/parquet shards)
+data/
+*.parquet
+*.zip
+*.tar.gz
+
+# Keep small test CSVs & public sample data, ignore massive raw CSVs
+*.csv
+!reports/*.csv
+!test_csvs/*.csv
+!frontend/public/data/*.csv
+
+# OS & Editor Files
 .DS_Store
 Thumbs.db
 .vscode/
-.idea/
+
+.agents/

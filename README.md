@@ -10,11 +10,12 @@ Built with **PyTorch**, **PennyLane**, **Scikit-Learn**, and **FastAPI**, with b
 
 Network Intrusion Detection Systems (NIDS) face a fundamental trade-off between **Attack Recall** (detecting stealthy cyber intrusions) and **False Positive Rate** (avoiding analyst alert fatigue). This project implements a controlled empirical benchmark comparing:
 
-1. **Classical MLP Baseline:** Over-parameterized classical feedforward network (6,401 trainable parameters).
-2. **Standard VQC Baseline ($L=2$):** Variational quantum classifier with a single initial feature encoding stage $E(x)$ at $t=0$, followed by 2 entangling layers (1,113 total parameters: 1,097 classical encoder, 16 quantum).
-3. **Hybrid Quantum Data Re-uploading ($L=1$):** Interleaving classical feature re-uploading and 1 variational layer (1,105 parameters: 1,097 classical, 8 quantum).
-4. **Hybrid Quantum Data Re-uploading ($L=2$):** Interleaving classical feature re-uploading across 2 variational layers (1,113 parameters: 1,097 classical, 16 quantum).
-5. **Hybrid Quantum Data Re-uploading ($L=4$):** Deep 4-layer re-uploading ansatz (1,129 parameters: 1,097 classical, 32 quantum).
+1. **Classical MLP Baseline:** Over-parameterized classical feedforward network (6,401 trainable parameters: `63 -> 64 -> 32 -> 1` with BatchNorm and Dropout).
+2. **Classical Bottleneck MLP Baseline:** Parameter-matched classical bottleneck network (1,097 trainable parameters: `63 -> 16 -> 4 -> 1` with $\pi \cdot \tanh$ non-linearity) isolating quantum circuit utility.
+3. **Standard VQC Baseline ($L=2$):** Variational quantum classifier with a single initial feature encoding stage $E(x)$ at $t=0$, followed by 2 entangling layers (1,113 total parameters: 1,097 classical encoder/head, 16 quantum).
+4. **Hybrid Quantum Data Re-uploading ($L=1$):** Interleaving classical feature re-uploading and 1 variational layer (1,105 parameters: 1,097 classical, 8 quantum).
+5. **Hybrid Quantum Data Re-uploading ($L=2$):** Interleaving classical feature re-uploading across 2 variational layers (1,113 parameters: 1,097 classical, 16 quantum).
+6. **Hybrid Quantum Data Re-uploading ($L=4$):** Deep 4-layer re-uploading ansatz (1,129 parameters: 1,097 classical, 32 quantum).
 
 ```
 Raw Network Flow (42 features: 39 numerical, 3 categorical)
@@ -66,20 +67,24 @@ Linear(32, 1)                      4 Bounded Angles in [-pi, pi]
 
 ## 3. Summary of Controlled Experimental Results (3 Independent Seeds: 42, 123, 999)
 
-*All models evaluated on the held-out test split (900 samples: 495 Attacks, 405 Benign). Metrics reported as Mean $\pm$ Sample Standard Deviation across seeds:*
+*All models evaluated on the official held-out test split (175,341 flows: 119,341 Attacks, 56,000 Benign). Metrics reported as Mean $\pm$ Sample Standard Deviation across seeds:*
 
-| Model Architecture | Test Accuracy | Macro F1 | Test ROC-AUC | Attack Recall (Sensitivity) | False-Positive Rate (FPR) | Trainable Parameters | Training Time |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Classical MLP** | $93.19\% \pm 0.65\%$ | $0.9313 \pm 0.0065$ | **$0.9844 \pm 0.0008$** | $92.59\% \pm 1.72\%$ | $6.09\% \pm 1.36\%$ | 6,401 | **$27.06\text{s} \pm 11.21\text{s}$** |
-| **Standard VQC ($L=2$)** | $93.00\% \pm 0.33\%$ | $0.9295 \pm 0.0033$ | $0.9835 \pm 0.0007$ | $92.26\% \pm 0.76\%$ | $6.09\% \pm 0.57\%$ | 1,113 | $161.42\text{s} \pm 4.30\text{s}$ |
-| **Hybrid Re-uploading ($L=1$)** | $92.81\% \pm 0.28\%$ | $0.9275 \pm 0.0027$ | $0.9834 \pm 0.0014$ | **$93.13\% \pm 1.05\%$** | $7.57\% \pm 0.87\%$ | **1,105** | $30.31\text{s} \pm 13.37\text{s}$ |
-| **Hybrid Re-uploading ($L=2$)** | **$93.33\% \pm 0.19\%$** | **$0.9329 \pm 0.0019$** | $0.9835 \pm 0.0013$ | $92.12\% \pm 0.93\%$ | **$5.19\% \pm 0.86\%$** | 1,113 | $35.78\text{s} \pm 0.10\text{s}$ |
-| **Hybrid Re-uploading ($L=4$)** | $92.41\% \pm 1.00\%$ | $0.9234 \pm 0.0100$ | $0.9824 \pm 0.0017$ | $92.26\% \pm 1.35\%$ | $7.41\% \pm 1.54\%$ | 1,129 | $63.27\text{s} \pm 0.85\text{s}$ |
+| Model Architecture | Test Accuracy | Macro F1 | Test ROC-AUC | Attack Recall (Sensitivity) | False-Positive Rate (FPR) | Tuned Threshold $\tau^*$ | Trainable Parameters | Training Time |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Classical MLP** | .23\% \pm 0.19\%$ | .8838 \pm 0.0018$ | **.9821 \pm 0.0009$** | .40\% \pm 0.42\%$ | **.62\% \pm 0.35\%$** | .4225 \pm 0.0348$ | 6,593 | .90\text{s} \pm 3.48\text{s}$ |
+| **Classical Bottleneck** | **.41\% \pm 0.25\%$** | **.8855 \pm 0.0025$** | **.9821 \pm 0.0007$** | .84\% \pm 0.44\%$ | .99\% \pm 0.17\%$ | .3532 \pm 0.0400$ | **1,145** | **.01\text{s} \pm 0.60\text{s}$** |
+| **Standard VQC (=2$)** | .02\% \pm 0.48\%$ | .8814 \pm 0.0047$ | .9783 \pm 0.0019$ | .47\% \pm 0.87\%$ | .41\% \pm 0.36\%$ | .3631 \pm 0.0702$ | 1,161 | .33\text{s} \pm 5.68\text{s}$ |
+| **Hybrid Re-uploading (=1$)** | .76\% \pm 0.72\%$ | .8790 \pm 0.0072$ | .9773 \pm 0.0049$ | .87\% \pm 1.07\%$ | .95\% \pm 0.38\%$ | .4225 \pm 0.0488$ | 1,153 | .83\text{s} \pm 3.70\text{s}$ |
+| **Hybrid Re-uploading (=2$)** | .32\% \pm 0.31\%$ | .8844 \pm 0.0030$ | .9808 \pm 0.0014$ | **.87\% \pm 0.63\%$** | .33\% \pm 0.58\%$ | .3301 \pm 0.0412$ | 1,161 | .88\text{s} \pm 5.82\text{s}$ |
+| **Hybrid Re-uploading (=4$)** | .14\% \pm 0.34\%$ | .8827 \pm 0.0036$ | .9791 \pm 0.0016$ | .55\% \pm 0.38\%$ | .21\% \pm 0.47\%$ | .3631 \pm 0.0597$ | 1,177 | .42\text{s} \pm 20.24\text{s}$ |
 
 ### Operational Takeaways:
-- **Hybrid Re-uploading ($L=2$)** achieves the lowest False-Positive Rate ($5.19\% \pm 0.86\%$), reducing false alerts by ~9,000 per million flows compared to classical models.
-- **Hybrid models require 5.75x fewer parameters** than the classical baseline to reach competitive accuracy.
-- **Re-uploading speeds up convergence by 4.5x** over standard VQC ($35.8\text{s}$ vs $161.4\text{s}$).
+- **Classical Bottleneck Parity:** The parameter-matched classical baseline (**Classical Bottleneck MLP**, 1,145 parameters: 66 -> 16 -> 4 -> 1) achieves .41\%$ accuracy, matching or exceeding all quantum hybrid architectures (.76\%–89.32\%$) while training **6.0x to 16.2x faster** (.01\text{s}$ vs .8\text{s}–275.4\text{s}$). This confirms that the classical compression front-end performs the primary representation learning.
+- **Empirical Timing Ground Truth:** Under vectorized PennyLane backpropagation (default.qubit) on the 45,854-sample training partition, Classical Bottleneck trains in .01\text{s}$, Classical MLP in .90\text{s}$, while quantum statevector simulation scales with layer depth: Standard VQC (=2$) in .33\text{s}$, Hybrid Re-uploading (=1$) in .83\text{s}$, Hybrid Re-uploading (=2$) in .88\text{s}$, and Hybrid Re-uploading (=4$) in .42\text{s}$.
+- **Validation Threshold Optimization:** Rather than relying on an arbitrary default $\tau = 0.5$, tuning $\tau^*$ on validation data via Youden\'s J statistic adapts to the class imbalance, balancing Attack Recall ($~85\%–86\%$) against low operational false alarms ($~2.6\%–3.4\%$).
+- **Active Production Checkpoint:** Top-performing hybrid quantum model **Hybrid Re-uploading (=2$)** (Seed 999: .62\%$ test accuracy, .8875$ Macro F1, $\tau^* = 0.3169$) is deployed at 
+esults/network_intrusion/best_model.pt with matching preprocessor 
+esults/network_intrusion/preprocessor.joblib.
 
 ---
 
@@ -107,11 +112,11 @@ pip install -r requirements.txt
 ```
 Verifies dataset pipeline, leakage prevention, quantum measurement bounds, gradient backpropagation, API health, and inference consistency.
 
-### 5.2 Run Controlled 5-Model Experimental Study (15 Runs)
+### 5.2 Run Controlled 6-Model Experimental Study (18 Runs)
 ```powershell
 .venv\Scripts\python.exe experiments/run_nids_study.py
 ```
-Executes all 5 model architectures across 3 random seeds (`42`, `123`, `999`), saves raw metrics, test predictions, and deploys the best checkpoint.
+Executes all 6 model architectures across 3 random seeds (`42`, `123`, `999`), tunes decision thresholds $\tau^*$ on validation splits, saves raw metrics and predictions, and deploys the best checkpoint.
 
 ### 5.3 Generate Comparison Visualizations & Summary JSON
 ```powershell

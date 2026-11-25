@@ -1,8 +1,82 @@
 """Classical PyTorch Multilayer Perceptron baseline model."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 import torch
 import torch.nn as nn
+
+
+class ClassicalBottleneckMLP(nn.Module):
+    """
+    Parameter-matched classical bottleneck baseline isolating quantum circuit utility.
+
+    Architecture:
+        x (input_dim)
+          -> Linear(input_dim, hidden_dim) [default: 63 -> 16]
+          -> ReLU()
+          -> Linear(hidden_dim, latent_dim) [default: 16 -> 4]
+          -> pi * tanh() (bounded latent angles in [-pi, pi])
+          -> Linear(latent_dim, 1) [default: 4 -> 1 logit]
+
+    Parameter count for input_dim=63, hidden_dim=16, latent_dim=4:
+        Linear(63, 16): 63 * 16 + 16 = 1,024
+        Linear(16, 4):  16 * 4 + 4   =    68
+        Linear(4, 1):    4 * 1 + 1   =     5
+        Total: 1,097 trainable parameters (strictly matches the classical components of Hybrid models)
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 63,
+        hidden_dim: int = 16,
+        latent_dim: int = 4,
+    ) -> None:
+        super().__init__()
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.latent_dim = latent_dim
+
+        self.encoder = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, latent_dim),
+        )
+        self.output_head = nn.Linear(latent_dim, 1)
+
+    def encode_features(self, x: torch.Tensor) -> torch.Tensor:
+        """Map input features to bounded latent representation in [-pi, pi]."""
+        raw = self.encoder(x)
+        return torch.pi * torch.tanh(raw)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass producing raw logits."""
+        latent = self.encode_features(x)
+        logits = self.output_head(latent)
+        return logits
+
+    def predict_proba(self, x: torch.Tensor) -> torch.Tensor:
+        """Compute predicted probabilities for class 1 (ATTACK)."""
+        self.eval()
+        with torch.no_grad():
+            logits = self.forward(x)
+            probs = torch.sigmoid(logits)
+        return probs
+
+    def predict(self, x: torch.Tensor, threshold: float = 0.5) -> torch.Tensor:
+        """Compute binary class predictions given threshold."""
+        probs = self.predict_proba(x)
+        return (probs >= threshold).long()
+
+    @property
+    def parameter_breakdown(self) -> Dict[str, int]:
+        """Detailed breakdown of trainable parameters."""
+        encoder_params = sum(p.numel() for p in self.encoder.parameters() if p.requires_grad)
+        output_params = sum(p.numel() for p in self.output_head.parameters() if p.requires_grad)
+        return {
+            "classical_encoder": encoder_params,
+            "quantum_circuit": 0,
+            "classical_output_head": output_params,
+            "total_trainable": encoder_params + output_params,
+        }
 
 
 class ClassicalMLP(nn.Module):

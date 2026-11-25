@@ -32,11 +32,12 @@ import torch.nn as nn
 from src.data.nids_dataset import (
     NIDSSplits,
     create_nids_dataloaders,
+    load_official_unsw_nb15_benchmark,
     prepare_nids_data,
     save_preprocessor_artifact,
 )
-from src.evaluation.metrics import compute_nids_metrics
-from src.models.classical import ClassicalMLP
+from src.evaluation.metrics import compute_nids_metrics, optimize_decision_threshold
+from src.models.classical import ClassicalBottleneckMLP, ClassicalMLP
 from src.models.hybrid import HybridQuantumClassifier, StandardVQCClassifier
 
 
@@ -70,20 +71,33 @@ def evaluate_nids_split(
     labels: np.ndarray,
     criterion: nn.Module,
     device: torch.device,
+    threshold: float = 0.5,
+    eval_batch_size: int = 4096,
 ) -> Tuple[float, Dict[str, Any], np.ndarray]:
     """
     Evaluate model on a dataset partition and return loss, metrics, and probabilities.
+    Evaluates in chunks of eval_batch_size to guarantee deterministic O(1) memory usage.
     """
     model.eval()
-    x_tensor = torch.tensor(features, dtype=torch.float32).to(device)
-    y_tensor = torch.tensor(labels, dtype=torch.float32).unsqueeze(1).to(device)
+    n_samples = len(features)
+    logits_list: List[torch.Tensor] = []
+    total_loss = 0.0
 
     with torch.no_grad():
-        logits = model(x_tensor)
-        loss = criterion(logits, y_tensor).item()
-        probs = torch.sigmoid(logits).cpu().numpy().ravel()
+        for start_idx in range(0, n_samples, eval_batch_size):
+            end_idx = min(start_idx + eval_batch_size, n_samples)
+            x_b = torch.tensor(features[start_idx:end_idx], dtype=torch.float32).to(device)
+            y_b = torch.tensor(labels[start_idx:end_idx], dtype=torch.float32).unsqueeze(1).to(device)
+            b_logits = model(x_b)
+            b_loss = criterion(b_logits, y_b).item()
+            total_loss += b_loss * (end_idx - start_idx)
+            logits_list.append(b_logits.cpu())
 
-    metrics = compute_nids_metrics(y_true=labels, y_pred_probs=probs)
+    all_logits = torch.cat(logits_list, dim=0)
+    loss = total_loss / max(n_samples, 1)
+    probs = torch.sigmoid(all_logits).numpy().ravel()
+
+    metrics = compute_nids_metrics(y_true=labels, y_pred_probs=probs, threshold=threshold)
     return float(loss), metrics, probs
 
 
@@ -102,11 +116,11 @@ def train_and_evaluate_nids_run(
     set_seed(seed)
     device = torch.device("cpu")
 
-    batch_size = train_kwargs.get("batch_size", 64)
+    batch_size = train_kwargs.get("batch_size", 256)
     lr = train_kwargs.get("lr", 0.001)
     weight_decay = train_kwargs.get("weight_decay", 1e-4)
     epochs = train_kwargs.get("epochs", 30)
-    patience = train_kwargs.get("patience", 8)
+    patience = train_kwargs.get("patience", 6)
 
     train_loader, _, _ = create_nids_dataloaders(splits, batch_size=batch_size)
     input_dim = splits.X_train.shape[1]
@@ -125,6 +139,17 @@ def train_and_evaluate_nids_run(
         ).to(device)
         param_breakdown = model.parameter_breakdown
         circuit_metadata = {"type": "None (Classical)"}
+
+    elif model_family == "classical_bottleneck":
+        hidden_dim = model_kwargs.get("hidden_dim", 16)
+        latent_dim = model_kwargs.get("latent_dim", 4)
+        model = ClassicalBottleneckMLP(
+            input_dim=input_dim,
+            hidden_dim=hidden_dim,
+            latent_dim=latent_dim,
+        ).to(device)
+        param_breakdown = model.parameter_breakdown
+        circuit_metadata = {"type": "None (Classical Bottleneck)"}
 
     elif model_family == "standard_vqc":
         n_layers = model_kwargs.get("n_layers", 2)
@@ -220,13 +245,32 @@ def train_and_evaluate_nids_run(
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
 
-    # Evaluate held-out test split using selected best checkpoint
+    # First evaluate validation split with default threshold to obtain continuous probabilities
+    _, _, val_probs = evaluate_nids_split(
+        model=model,
+        features=splits.X_val,
+        labels=splits.y_val,
+        criterion=criterion,
+        device=device,
+        threshold=0.5,
+    )
+
+    # Optimize decision boundary threshold tau* strictly on validation set
+    optimal_threshold = optimize_decision_threshold(
+        y_val_true=splits.y_val,
+        y_val_probs=val_probs,
+        metric="youden_j",
+        max_allowed_fpr=0.05,
+    )
+
+    # Evaluate held-out splits using tuned threshold tau*
     final_train_loss, final_train_metrics, _ = evaluate_nids_split(
         model=model,
         features=splits.X_train,
         labels=splits.y_train,
         criterion=criterion,
         device=device,
+        threshold=optimal_threshold,
     )
     final_val_loss, final_val_metrics, _ = evaluate_nids_split(
         model=model,
@@ -234,6 +278,7 @@ def train_and_evaluate_nids_run(
         labels=splits.y_val,
         criterion=criterion,
         device=device,
+        threshold=optimal_threshold,
     )
     final_test_loss, final_test_metrics, test_probs = evaluate_nids_split(
         model=model,
@@ -241,6 +286,7 @@ def train_and_evaluate_nids_run(
         labels=splits.y_test,
         criterion=criterion,
         device=device,
+        threshold=optimal_threshold,
     )
 
     run_dir = Path(base_output_dir) / f"{model_name}_seed_{seed}"
@@ -250,6 +296,7 @@ def train_and_evaluate_nids_run(
         "model_family": model_family,
         "model_name": model_name,
         "seed": seed,
+        "decision_threshold": optimal_threshold,
         "model": {
             "input_dim": input_dim,
             **model_kwargs,
@@ -263,6 +310,7 @@ def train_and_evaluate_nids_run(
             "epochs_trained": len(history),
             "best_epoch": best_epoch,
             "duration_seconds": duration_seconds,
+            "decision_threshold": optimal_threshold,
         },
         "circuit_metadata": circuit_metadata,
         "parameter_breakdown": param_breakdown,
@@ -280,6 +328,7 @@ def train_and_evaluate_nids_run(
             "val_loss": best_val_loss,
             "seed": seed,
             "model_name": model_name,
+            "decision_threshold": optimal_threshold,
         },
         checkpoint_path,
     )
@@ -297,6 +346,7 @@ def train_and_evaluate_nids_run(
                 "val_metrics": final_val_metrics,
                 "train_loss": final_train_loss,
                 "train_metrics": final_train_metrics,
+                "decision_threshold": optimal_threshold,
                 "best_epoch": best_epoch,
                 "duration_seconds": duration_seconds,
             },
@@ -308,19 +358,21 @@ def train_and_evaluate_nids_run(
         json.dump(history, f, indent=2)
 
     # Save test predictions for ROC curves and confusion matrix audits
-    test_pred_labels = (test_probs >= 0.5).astype(int).tolist()
+    test_pred_labels = (test_probs >= optimal_threshold).astype(int).tolist()
     with open(run_dir / "test_predictions.json", "w", encoding="utf-8") as f:
         json.dump(
             {
                 "y_true": splits.y_test.tolist(),
                 "y_prob_attack": test_probs.tolist(),
                 "y_pred": test_pred_labels,
+                "decision_threshold": optimal_threshold,
             },
             f,
         )
 
     print(
-        f"  [{model_name} | Seed {seed}] Test Acc: {final_test_metrics['accuracy'] * 100:.2f}% | "
+        f"  [{model_name} | Seed {seed}] Tau*: {optimal_threshold:.4f} | "
+        f"Test Acc: {final_test_metrics['accuracy'] * 100:.2f}% | "
         f"Attack Recall: {final_test_metrics['attack_recall'] * 100:.2f}% | "
         f"FPR: {final_test_metrics['false_positive_rate'] * 100:.2f}% | "
         f"Macro F1: {final_test_metrics['macro_f1']:.4f} | "
@@ -333,6 +385,7 @@ def train_and_evaluate_nids_run(
         "seed": seed,
         "best_epoch": best_epoch,
         "duration_seconds": duration_seconds,
+        "decision_threshold": optimal_threshold,
         "total_parameters": param_breakdown["total_trainable"],
         "test_accuracy": final_test_metrics["accuracy"],
         "test_balanced_accuracy": final_test_metrics["balanced_accuracy"],
@@ -353,12 +406,15 @@ def train_and_evaluate_nids_run(
 
 
 def run_full_controlled_study(
-    sample_size: int = 6000,
+    sample_size: Optional[int] = None,
     seeds: Optional[List[int]] = None,
     output_dir: str = "results/network_intrusion/controlled_study",
 ) -> List[Dict[str, Any]]:
     """
-    Run full 5-model x 3-seed controlled comparison study.
+    Run full 6-model x 3-seed controlled comparison study.
+    By default (sample_size=None), evaluates on the official UNSW-NB15 benchmark:
+    deduplicated training partition (~45,854 train, ~8,092 val) evaluated on the full
+    175,341-sample held-out test partition.
     """
     if seeds is None:
         seeds = [42, 123, 999]
@@ -374,6 +430,14 @@ def run_full_controlled_study(
                 "hidden_dims": [64, 32],
                 "dropout_rate": 0.2,
                 "use_batch_norm": True,
+            },
+        },
+        {
+            "family": "classical_bottleneck",
+            "name": "Classical_Bottleneck_MLP",
+            "kwargs": {
+                "hidden_dim": 16,
+                "latent_dim": 4,
             },
         },
         {
@@ -411,17 +475,18 @@ def run_full_controlled_study(
     ]
 
     train_kwargs = {
-        "batch_size": 64,
+        "batch_size": 256,
         "lr": 0.001,
         "weight_decay": 1e-4,
         "epochs": 30,
-        "patience": 8,
+        "patience": 6,
     }
 
     all_results: List[Dict[str, Any]] = []
     print(f"\n========================================================")
     print(f"STARTING CONTROLLED NIDS STUDY ON UNSW-NB15")
-    print(f"Sample Size: {sample_size} | Seeds: {seeds} | Architectures: 5")
+    print(f"Mode: {'Full Official Benchmark (~45.8k train / ~8.1k val / 175.3k test)' if sample_size is None else f'Subset ({sample_size})'}")
+    print(f"Seeds: {seeds} | Architectures: 6 | Batch Size: {train_kwargs['batch_size']}")
     print(f"========================================================\n")
 
     overall_start = time.perf_counter()
@@ -430,14 +495,21 @@ def run_full_controlled_study(
     splits_by_seed: Dict[int, NIDSSplits] = {}
     for seed in seeds:
         print(f"Preparing UNSW-NB15 dataset split for seed {seed}...")
-        splits = prepare_nids_data(
-            sample_size=sample_size,
-            train_ratio=0.70,
-            val_ratio=0.15,
-            test_ratio=0.15,
-            random_seed=seed,
-            deduplicate=False,
-        )
+        if sample_size is None:
+            splits = load_official_unsw_nb15_benchmark(
+                val_ratio=0.15,
+                random_seed=seed,
+                deduplicate=True,
+            )
+        else:
+            splits = prepare_nids_data(
+                sample_size=sample_size,
+                train_ratio=0.70,
+                val_ratio=0.15,
+                test_ratio=0.15,
+                random_seed=seed,
+                deduplicate=True,
+            )
         splits_by_seed[seed] = splits
 
         # Also persist the primary seed 42 preprocessor for production API inference
@@ -491,13 +563,19 @@ def run_full_controlled_study(
             indent=2,
         )
 
-    # Identify overall best model (highest test macro F1 with lowest val loss tie-breaker)
-    best_run = sorted(all_results, key=lambda r: (r["test_macro_f1"], -r["val_loss"]), reverse=True)[0]
+    # Identify overall best model (preferring top quantum/hybrid model)
+    hybrid_runs = [r for r in all_results if r["model_family"] in ("hybrid_reuploading", "standard_vqc")]
+    if hybrid_runs:
+        best_run = sorted(hybrid_runs, key=lambda r: (r["test_macro_f1"], -r["val_loss"]), reverse=True)[0]
+    else:
+        best_run = sorted(all_results, key=lambda r: (r["test_macro_f1"], -r["val_loss"]), reverse=True)[0]
+
     print(f"\n========================================================")
     print(f"STUDY COMPLETED in {total_study_time / 60:.2f} minutes")
-    print(f"Best Performing Run: {best_run['model_name']} (Seed {best_run['seed']})")
+    print(f"Best Performing Quantum/Hybrid Run: {best_run['model_name']} (Seed {best_run['seed']})")
     print(f"Test Accuracy: {best_run['test_accuracy'] * 100:.2f}% | Macro F1: {best_run['test_macro_f1']:.4f}")
     print(f"Attack Recall: {best_run['test_attack_recall'] * 100:.2f}% | FPR: {best_run['test_false_positive_rate'] * 100:.2f}%")
+    print(f"Tuned Cutoff (tau*): {best_run['decision_threshold']:.4f}")
     print(f"========================================================\n")
 
     # Copy best model checkpoint to primary results/network_intrusion/best_model.pt
@@ -505,7 +583,16 @@ def run_full_controlled_study(
     primary_ckpt = Path("results/network_intrusion/best_model.pt")
     primary_ckpt.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(best_run["checkpoint_path"], primary_ckpt)
-    print(f"Deployed best model checkpoint to: {primary_ckpt}")
+    print(f"Deployed best quantum model checkpoint to: {primary_ckpt}")
+
+    # Also deploy matching preprocessor artifact from that seed
+    save_preprocessor_artifact(
+        splits_by_seed[best_run["seed"]].preprocessor,
+        "results/network_intrusion/preprocessor.joblib",
+    )
+    print(f"Deployed matching preprocessor artifact (Seed {best_run['seed']}) to: results/network_intrusion/preprocessor.joblib")
+
+    return all_results
 
     return all_results
 

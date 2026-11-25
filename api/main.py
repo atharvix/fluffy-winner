@@ -8,23 +8,25 @@ Exposes production inference endpoints for Google Stitch or any custom web front
 """
 
 import io
+import os
 import time
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile, status
+import torch
+torch.set_num_threads(1)
+
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
-from src.data.nids_dataset import (
-    RAW_CATEGORICAL_FEATURES,
-    RAW_INPUT_FEATURES,
-    RAW_NUMERICAL_FEATURES,
-    TARGET_LABEL_MAPPING,
-)
+from src.data.ciciot2023_dataset import TARGET_LABEL_MAPPING
 from src.inference.nids_predictor import NIDSPredictor, NIDSPredictionResult
 
 
@@ -33,7 +35,7 @@ app = FastAPI(
     title="Hybrid Classical–Quantum Network Intrusion Detection API",
     description=(
         "Production inference backend for variational quantum and data re-uploading "
-        "hybrid classifiers trained on the UNSW-NB15 network intrusion dataset."
+        "hybrid classifiers trained on the CIC-IoT-2023 (45M Flows) network intrusion dataset."
     ),
     version="1.0.0",
 )
@@ -76,55 +78,28 @@ def get_predictor() -> NIDSPredictor:
 
 # Pydantic Schemas for JSON inference
 class SingleFlowRecord(BaseModel):
+    model_config = {"extra": "allow"}
     id: Optional[Union[str, int]] = Field(None, description="Optional record identifier")
-    dur: float = Field(..., description="Record total duration")
-    proto: str = Field(..., description="Transaction protocol (e.g. tcp, udp)")
-    service: str = Field(..., description="Destination service (e.g. http, ftp, -)")
-    state: str = Field(..., description="Connection state (e.g. FIN, INT, CON)")
-    spkts: int = Field(..., description="Source to destination packet count")
-    dpkts: int = Field(..., description="Destination to source packet count")
-    sbytes: int = Field(..., description="Source to destination transaction bytes")
-    dbytes: int = Field(..., description="Destination to source transaction bytes")
-    rate: float = Field(..., description="Packet rate")
-    sttl: int = Field(..., description="Source to destination time to live")
-    dttl: int = Field(..., description="Destination to source time to live")
-    sload: float = Field(..., description="Source bits per second")
-    dload: float = Field(..., description="Destination bits per second")
-    sloss: int = Field(..., description="Source packets retransmitted or dropped")
-    dloss: int = Field(..., description="Destination packets dropped")
-    sinpkt: float = Field(..., description="Source interpacket arrival time (msec)")
-    dinpkt: float = Field(..., description="Destination interpacket arrival time (msec)")
-    sjit: float = Field(..., description="Source jitter (msec)")
-    djit: float = Field(..., description="Destination jitter (msec)")
-    swin: int = Field(..., description="Source TCP window advertisement")
-    stcpb: int = Field(..., description="Source TCP base sequence number")
-    dtcpb: int = Field(..., description="Destination TCP base sequence number")
-    dwin: int = Field(..., description="Destination TCP window advertisement")
-    tcprtt: float = Field(..., description="TCP connection setup round-trip time")
-    synack: float = Field(..., description="TCP SYN to SYN-ACK setup time")
-    ackdat: float = Field(..., description="TCP SYN-ACK to ACK setup time")
-    smean: int = Field(..., description="Mean packet size transmitted by source")
-    dmean: int = Field(..., description="Mean packet size transmitted by destination")
-    trans_depth: int = Field(..., description="Pipelined HTTP request depth")
-    response_body_len: int = Field(..., description="HTTP response content length")
-    ct_srv_src: int = Field(..., description="Connections to same service from source IP")
-    ct_state_ttl: int = Field(..., description="Connections with same state and TTL")
-    ct_dst_ltm: int = Field(..., description="Connections to same destination address")
-    ct_src_dport_ltm: int = Field(..., description="Connections from same source to same destination port")
-    ct_dst_sport_ltm: int = Field(..., description="Connections from same destination to same source port")
-    ct_dst_src_ltm: int = Field(..., description="Connections between same source and destination")
-    is_ftp_login: int = Field(..., description="1 if FTP session accessed by user/password")
-    ct_ftp_cmd: int = Field(..., description="Count of FTP commands in session")
-    ct_flw_http_mthd: int = Field(..., description="Count of HTTP request methods")
-    ct_src_ltm: int = Field(..., description="Connections from same source IP in last 100")
-    ct_srv_dst: int = Field(..., description="Connections to same service at destination IP")
-    is_sm_ips_ports: int = Field(..., description="1 if source and destination IP and ports equal")
 
 
 class PredictRequest(BaseModel):
     records: List[SingleFlowRecord] = Field(..., description="List of network flow records to classify")
-    threshold: Optional[float] = Field(0.5, ge=0.0, le=1.0, description="Decision threshold for ATTACK label")
+    threshold: Optional[float] = Field(None, ge=0.0, le=1.0, description="Decision threshold for ATTACK label (defaults to model's tuned threshold)")
 
+
+
+@app.get("/api/config", summary="Runtime Frontend Configuration")
+def runtime_config(request: Request) -> Dict[str, Any]:
+    pred = get_predictor()
+    base_url = str(request.base_url).rstrip("/")
+    return {
+        "api_base_url": base_url,
+        "model_name": pred.model_name,
+        "model_family": pred.model_family,
+        "dataset": getattr(pred, "dataset_name", "CIC-IoT-2023 (45,019,243 Flows)"),
+        "input_feature_count": len(pred.EXPECTED_FEATURES),
+        "decision_threshold": round(float(pred.decision_threshold), 4),
+    }
 
 @app.get("/api/health", summary="Service Health and Model Status")
 def health() -> Dict[str, Any]:
@@ -176,19 +151,19 @@ def model_info() -> Dict[str, Any]:
     return {
         "model_name": predictor.model_name,
         "model_family": predictor.model_family,
-        "dataset": "UNSW-NB15",
+        "dataset": "CIC-IoT-2023 (45M Flows)",
         "dataset_provenance": (
             "Australian Centre for Cyber Security (ACCS), UNSW Canberra. "
             "Authors: Nour Moustafa and Jill Slay (2015)."
         ),
-        "input_feature_count": len(RAW_INPUT_FEATURES),
-        "raw_features": RAW_INPUT_FEATURES,
-        "numerical_features": RAW_NUMERICAL_FEATURES,
-        "categorical_features": RAW_CATEGORICAL_FEATURES,
+        "input_feature_count": len(predictor.EXPECTED_FEATURES),
+        "raw_features": predictor.EXPECTED_FEATURES,
+        "numerical_features": predictor.NUMERICAL_FEATURES,
+        "categorical_features": predictor.CATEGORICAL_FEATURES,
         "class_label_mapping": TARGET_LABEL_MAPPING,
         "positive_class": "ATTACK (1)",
         "negative_class": "BENIGN (0)",
-        "decision_threshold": 0.5,
+        "decision_threshold": round(float(predictor.decision_threshold), 4),
         "parameter_breakdown": param_breakdown,
         "circuit_metadata": circuit_metadata,
         "environment": config.get("environment", {}),
@@ -219,8 +194,14 @@ def predict_json(request: PredictRequest) -> Dict[str, Any]:
     records_dict = [r.model_dump() for r in request.records]
     df = pd.DataFrame(records_dict)
 
+    active_threshold = (
+        float(request.threshold)
+        if request.threshold is not None
+        else float(predictor.decision_threshold)
+    )
+
     try:
-        res: NIDSPredictionResult = predictor.predict(df, threshold=request.threshold)
+        res: NIDSPredictionResult = predictor.predict(df, threshold=active_threshold)
     except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -276,19 +257,19 @@ def predict_json(request: PredictRequest) -> Dict[str, Any]:
             "benign_count": benign_count,
             "attack_ratio": round(attack_count / res.sample_count, 4),
         },
-        "decision_threshold": request.threshold,
+        "decision_threshold": round(active_threshold, 4),
         "predictions": predictions_out,
     }
 
 
 @app.post("/api/predict/csv", summary="Predict on Uploaded CSV File")
-async def predict_csv(
+def predict_csv(
     file: UploadFile = File(...),
-    threshold: float = Query(0.5, ge=0.0, le=1.0),
+    threshold: Optional[float] = Query(None, ge=0.0, le=1.0),
     format: str = Query("json", pattern="^(json|csv)$"),
 ) -> Response:
     """
-    Accepts CSV file upload containing UNSW-NB15 flow features, validates schema,
+    Accepts CSV file upload containing CIC-IoT-2023 (45M Flows) flow features, validates schema,
     executes inference, and returns structured JSON or downloadable CSV with predictions.
     """
     try:
@@ -305,7 +286,7 @@ async def predict_csv(
             detail="Uploaded file must have a .csv extension.",
         )
 
-    contents = await file.read()
+    contents = file.file.read()
     if len(contents) == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -328,8 +309,12 @@ async def predict_csv(
             detail=f"CSV schema validation failed: {'; '.join(validation_errors)}",
         )
 
+    active_threshold = (
+        float(threshold) if threshold is not None else float(predictor.decision_threshold)
+    )
+
     try:
-        res: NIDSPredictionResult = predictor.predict(df, threshold=threshold)
+        res: NIDSPredictionResult = predictor.predict(df, threshold=active_threshold)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -381,7 +366,11 @@ async def predict_csv(
                 "benign_count": benign_count,
                 "attack_ratio": round(attack_count / res.sample_count, 4),
             },
-            "decision_threshold": threshold,
+            "decision_threshold": round(active_threshold, 4),
             "predictions": predictions_out,
         }
     )
+
+# Eagerly warm up predictor on main thread to avoid Windows OpenMP/AnyIO thread crash
+get_predictor()
+

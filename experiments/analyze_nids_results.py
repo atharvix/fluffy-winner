@@ -52,6 +52,7 @@ def compute_aggregate_statistics(runs: List[Dict[str, Any]]) -> Dict[str, Dict[s
         "test_benign_f1",
         "test_false_positive_rate",
         "test_false_negative_rate",
+        "decision_threshold",
         "duration_seconds",
     ]
 
@@ -87,11 +88,11 @@ def generate_plots(
     runs = study_data["results"]
     agg_stats = compute_aggregate_statistics(runs)
 
-    p_dir = Path(plots_dir)
+    p_dir = Path(plots_dir).resolve()
     p_dir.mkdir(parents=True, exist_ok=True)
 
     # Save aggregated statistics JSON
-    summary_stats_path = Path("results/network_intrusion/summary_statistics.json")
+    summary_stats_path = Path("results/network_intrusion/summary_statistics.json").resolve()
     summary_stats_path.parent.mkdir(parents=True, exist_ok=True)
     with open(summary_stats_path, "w", encoding="utf-8") as f:
         json.dump(agg_stats, f, indent=2)
@@ -99,6 +100,7 @@ def generate_plots(
 
     model_names = [
         "Classical_MLP",
+        "Classical_Bottleneck_MLP",
         "Standard_VQC_L2",
         "Hybrid_Reuploading_L1",
         "Hybrid_Reuploading_L2",
@@ -106,15 +108,16 @@ def generate_plots(
     ]
     display_names = [
         "Classical MLP",
+        "Classical Bottleneck",
         "Standard VQC (L=2)",
         "Hybrid Re-up (L=1)",
         "Hybrid Re-up (L=2)",
         "Hybrid Re-up (L=4)",
     ]
-    colors = ["#2563EB", "#7C3AED", "#059669", "#D97706", "#DC2626"]
+    colors = ["#2563EB", "#0284C7", "#7C3AED", "#059669", "#D97706", "#DC2626"]
 
     # 1. Plot: Accuracy & Macro F1
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 5))
     x = np.arange(len(model_names))
     width = 0.35
 
@@ -133,11 +136,11 @@ def generate_plots(
     plt.legend(frameon=True)
     plt.grid(axis="y", linestyle="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(p_dir / "accuracy_macro_f1_by_model.png", dpi=300)
+    plt.savefig(str(p_dir / "accuracy_macro_f1_by_model.png"), dpi=200)
     plt.close()
 
     # 2. Plot: Attack Recall vs False-Positive Rate
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 5))
     rec_means = [agg_stats[m]["test_attack_recall"]["mean"] * 100 for m in model_names]
     rec_stds = [agg_stats[m]["test_attack_recall"]["std"] * 100 for m in model_names]
     fpr_means = [agg_stats[m]["test_false_positive_rate"]["mean"] * 100 for m in model_names]
@@ -153,7 +156,7 @@ def generate_plots(
     plt.legend(frameon=True)
     plt.grid(axis="y", linestyle="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(p_dir / "attack_recall_fpr_by_model.png", dpi=300)
+    plt.savefig(str(p_dir / "attack_recall_fpr_by_model.png"), dpi=200)
     plt.close()
 
     # 3. Plot: ROC Curves using actual continuous prediction probabilities (Seed 42)
@@ -176,11 +179,11 @@ def generate_plots(
     plt.legend(loc="lower right", frameon=True)
     plt.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(p_dir / "roc_curves_all_models.png", dpi=300)
+    plt.savefig(str(p_dir / "roc_curves_all_models.png"), dpi=200)
     plt.close()
 
     # 4. Plot: Confusion Matrices (Seed 42)
-    fig, axes = plt.subplots(1, 5, figsize=(20, 4))
+    fig, axes = plt.subplots(1, len(model_names), figsize=(4 * len(model_names), 4))
     for ax, m_name, d_name in zip(axes, model_names, display_names):
         m_file = Path(base_dir) / f"{m_name}_seed_42" / "metrics.json"
         if m_file.exists():
@@ -200,11 +203,11 @@ def generate_plots(
             ax.set_title(d_name, fontsize=10, fontweight="bold")
     plt.suptitle("Confusion Matrices on Held-Out Test Split (Seed 42)", fontsize=14, fontweight="bold")
     plt.tight_layout()
-    plt.savefig(p_dir / "confusion_matrices_summary.png", dpi=300)
+    plt.savefig(str(p_dir / "confusion_matrices_summary.png"), dpi=200)
     plt.close()
 
     # 5. Plot: Training Duration
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize=(11, 5))
     dur_means = [agg_stats[m]["duration_seconds"]["mean"] for m in model_names]
     dur_stds = [agg_stats[m]["duration_seconds"]["std"] for m in model_names]
     plt.bar(display_names, dur_means, yerr=dur_stds, capsize=5, color="#6366F1", alpha=0.85)
@@ -213,7 +216,7 @@ def generate_plots(
     plt.xticks(rotation=15, ha="right")
     plt.grid(axis="y", linestyle="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(p_dir / "training_time_by_model.png", dpi=300)
+    plt.savefig(str(p_dir / "training_time_by_model.png"), dpi=200)
     plt.close()
 
     # 6. Plot: Data Re-uploading Layer Ablation (L=1, L=2, L=4)
@@ -236,11 +239,11 @@ def generate_plots(
     plt.legend(frameon=True)
     plt.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(p_dir / "reuploading_layers_ablation.png", dpi=300)
+    plt.savefig(str(p_dir / "reuploading_layers_ablation.png"), dpi=200)
     plt.close()
 
     # 7. Plot: Parameter Counts and Circuit Complexity
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 5))
     param_counts = [agg_stats[m]["total_parameters"] for m in model_names]
     plt.bar(display_names, param_counts, color="#0D9488", alpha=0.85)
     for i, v in enumerate(param_counts):
@@ -251,7 +254,7 @@ def generate_plots(
     plt.ylim(0, max(param_counts) * 1.15)
     plt.grid(axis="y", linestyle="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(p_dir / "parameter_counts_circuit_complexity.png", dpi=300)
+    plt.savefig(str(p_dir / "parameter_counts_circuit_complexity.png"), dpi=200)
     plt.close()
 
     print(f"All 7 comparison plots successfully generated in: {p_dir}")

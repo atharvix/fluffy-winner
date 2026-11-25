@@ -80,6 +80,7 @@ export interface TranslationDictionary {
   f1Col: string;
   recallCol: string;
   fprCol: string;
+  decisionThresholdCol: string;
   trainingTimeCol: string;
   methodologyNoteTitle: string;
   methodologyNoteBody: string;
@@ -150,7 +151,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     trafficTitle: "Network Traffic Flow Inspector",
     trafficSubtitle: "Batch CSV traffic validation and real-time inference using pre-fitted zero-leakage preprocessing",
     dragDropTitle: "Drag & drop network flow CSV here",
-    dragDropSubtitle: "Strict 42-feature UNSW-NB15 schema required. Missing values will be validated.",
+    dragDropSubtitle: "Strict 39-feature CIC-IoT-2023 schema required. Missing values will be validated.",
     loadSampleBtn: "Load 25 Valid Test Flows",
     runBatchBtn: "Run Batch Classification",
     downloadCsvBtn: "Download Classified CSV",
@@ -165,7 +166,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     labTitle: "Single-Flow Detection Laboratory",
     labSubtitle: "Interactive feature perturbation, real-time prediction, and quantum expectation state inspection",
-    presetSelectorLabel: "Load Flow Preset (UNSW-NB15 Test Traffic)",
+    presetSelectorLabel: "Load CIC-IoT-2023 Held-Out Flow Preset",
     selectPreset: "-- Select a real network flow preset --",
     predictActionBtn: "Execute Model Inference",
     predictionResultTitle: "Inference Diagnostics",
@@ -178,16 +179,17 @@ export const translations: Record<Language, TranslationDictionary> = {
     decisionSupportDisclaimer: "This system is an operational decision-support tool. It does not automatically quarantine network ports or substitute for firewall rules.",
 
     experimentsTitle: "Controlled Research Benchmarks",
-    experimentsSubtitle: "Strict 5-model comparison across 3 fixed random seeds (42, 123, 999) under identical splits",
+    experimentsSubtitle: "Strict 6-model comparison across 3 fixed random seeds (42, 123, 999) under identical splits",
     architectureCol: "Model Architecture",
     paramsCol: "Parameters",
     accuracyCol: "Test Accuracy",
     f1Col: "Macro F1",
     recallCol: "Attack Recall",
     fprCol: "FPR (False Alarms)",
+    decisionThresholdCol: "Tuned Cutoff (τ*)",
     trainingTimeCol: "Training Time (s)",
     methodologyNoteTitle: "Controlled Methodology Protocol",
-    methodologyNoteBody: "All models share identical stratified splits (70% train, 15% validation, 15% test). Preprocessors were fitted exclusively on training data. Model checkpoints were selected strictly on minimum validation loss.",
+    methodologyNoteBody: "All models share identical stratified splits (70% train, 15% validation, 15% test). Preprocessors were fitted exclusively on training data. Optimal decision thresholds (τ*) were tuned on validation probabilities using Youden's J statistic, and checkpoints were selected on minimum validation loss.",
 
     researchTitle: "Methodology & Empirical Research",
     researchSubtitle: "Formal investigation into Fourier frequency expressivity in Quantum Data Re-uploading for tabular network intrusion detection",
@@ -251,7 +253,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     trafficTitle: "नेटवर्क फ़्लो ट्रैफ़िक विश्लेषक",
     trafficSubtitle: "शून्य-लीकेज प्रीप्रोसेसिंग के साथ बैच CSV ट्रैफ़िक सत्यापन और मॉडल अनुमान",
     dragDropTitle: "नेटवर्क फ़्लो CSV यहाँ ड्रैग करें",
-    dragDropSubtitle: "UNSW-NB15 का 42-फ़ीचर प्रारूप आवश्यक है। रिक्त मानों की स्वचालित जाँच होगी।",
+    dragDropSubtitle: "CIC-IoT-2023 का 39-फ़ीचर प्रारूप आवश्यक है। रिक्त मानों की स्वचालित जाँच होगी।",
     loadSampleBtn: "25 मान्य टेस्ट फ़्लो लोड करें",
     runBatchBtn: "बैच वर्गीकरण चलाएँ",
     downloadCsvBtn: "परिणाम CSV डाउनलोड करें",
@@ -266,7 +268,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     labTitle: "सिंगल-फ़्लो डिटेक्शन प्रयोगशाला",
     labSubtitle: "इंटरैक्टिव फ़ीचर परिवर्तन, वास्तविक समय अनुमान और क्वांटम अवस्था निरीक्षण",
-    presetSelectorLabel: "फ़्लो प्रीसेट चुनें (UNSW-NB15 टेस्ट डेटा)",
+    presetSelectorLabel: "CIC-IoT-2023 फ़्लो प्रीसेट चुनें",
     selectPreset: "-- वास्तविक नेटवर्क फ़्लो प्रीसेट चुनें --",
     predictActionBtn: "मॉडल अनुमान चलाएँ",
     predictionResultTitle: "अनुमान विश्लेषण परिणाम",
@@ -279,16 +281,17 @@ export const translations: Record<Language, TranslationDictionary> = {
     decisionSupportDisclaimer: "यह प्रणाली सुरक्षा विश्लेषक के निर्णय में सहायता के लिए है। यह फ़ायरवॉल का पूर्ण विकल्प नहीं है।",
 
     experimentsTitle: "नियंत्रित अनुसंधान अध्ययन एवं बेंचमार्क",
-    experimentsSubtitle: "3 स्वतंत्र बीजों (42, 123, 999) पर 5 मॉडलों का नियंत्रित तुलनात्मक अध्ययन",
+    experimentsSubtitle: "3 स्वतंत्र बीजों (42, 123, 999) पर 6 मॉडलों का नियंत्रित तुलनात्मक अध्ययन",
     architectureCol: "मॉडल वास्तुकला",
     paramsCol: "पैरामीटर्स",
     accuracyCol: "सटीकता (Accuracy)",
     f1Col: "मैक्रो F1",
     recallCol: "अटैक रिकॉल",
     fprCol: "फ़ॉल्स पॉजिटिव दर",
+    decisionThresholdCol: "ट्यून किया गया कटऑफ (τ*)",
     trainingTimeCol: "प्रशिक्षण समय (सेकंड)",
     methodologyNoteTitle: "कठोर अनुसंधान कार्यप्रणाली",
-    methodologyNoteBody: "सभी मॉडलों ने समान स्प्लिट्स (70% ट्रेन, 15% वैलिडेशन, 15% टेस्ट) का उपयोग किया। चेकपॉइंट केवल न्यूनतम वैलिडेशन लॉस पर चुने गए।",
+    methodologyNoteBody: "सभी मॉडलों ने समान स्प्लिट्स (70% ट्रेन, 15% वैलिडेशन, 15% टेस्ट) का उपयोग किया। निर्णय थ्रेशोल्ड (τ*) वैलिडेशन डेटा पर यूडन जे (Youden's J) द्वारा अनुकूलित किए गए, और चेकपॉइंट न्यूनतम वैलिडेशन लॉस पर चुने गए।",
 
     researchTitle: "अनुसंधान कार्यप्रणाली एवं सिद्धांत",
     researchSubtitle: "नेटवर्क घुसपैठ पहचान में क्वांटम डेटा री-अपलोडिंग की फूरियर आवृत्ति और अभिव्यक्ति क्षमता का विश्लेषण",

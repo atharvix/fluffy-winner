@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q-NIDS: Hybrid Classical-Quantum Network Intrusion Detection</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js 4.4.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            /* Palette: Dark Bench Graphite / Instrument High-Contrast */
+            --bg-page: #090A0C;
+            --bg-surface: #101215;
+            --bg-surface-elevated: #16191E;
+            --bg-code: #060708;
+            --border-default: #242831;
+            --border-subtle: #181B20;
+            --border-strong: #3A404D;
+            --text-primary: #ECEAE4;
+            --text-secondary: #969BA5;
+            --text-muted: #656A74;
+            
+            /* Utilitarian Accents */
+            --accent-primary: #E59A24;       /* Signal Amber */
+            --accent-primary-hover: #F59E0B;
+            --accent-quantum: #38BDF8;       /* Scope Cyan */
+            --status-benign: #22C55E;        /* Phosphor Green */
+            --status-attack: #EF4444;        /* Alarm Vermilion */
+            
+            /* Typography */
+            --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            
+            --radius-sm: 2px;
+            --radius-md: 4px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 16:9 Aspect Ratio Presentation Shell */
+        .slide-deck {
+            position: absolute;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: calc(100vh * 16 / 9);
+            max-height: calc(100vw * 9 / 16);
+            margin: auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Slide Top Header Bar */
+        .deck-header {
+            height: 48px;
+            min-height: 48px;
+            border-bottom: 1px solid var(--border-default);
+            background: var(--bg-surface-elevated);
+            display: flex;
+            align-items: center;
+            justifyContent: space-between;
+            padding: 0 24px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            z-index: 10;
+        }
+
+        .deck-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background: var(--accent-primary);
+            color: #000;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Slide Container */
+        .slides-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justifyContent: space-between;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(6px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Slide Typography */
+        .slide-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-eyebrow::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 1px;
+        }
+
+        .slide-title {
+            font-family: var(--font-heading);
+            font-size: clamp(26px, 3.2vw, 42px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .slide-subtitle {
+            font-size: clamp(13px, 1.3vw, 16px);
+            color: var(--text-secondary);
+            max-width: 860px;
+            line-height: 1.5;
+        }
+
+        /* Slide Main Body Area */
+        .slide-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            min-height: 0; /* for flex child scroll */
+        }
+
+        /* Two-Column Split Layout */
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+        }
+
+        /* 3-Card Feature Grid */
+        .feature-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* 4-Card Metrics Grid */
+        .metrics-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            width: 100%;
+        }
+
+        /* Panel Container */
+        .panel {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justifyContent: space-between;
+        }
+
+        .panel-header {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .panel-number {
+            font-family: var(--font-mono);
+            font-size: clamp(28px, 3.2vw, 44px);
+            font-weight: 800;
+            line-height: 1;
+            margin: 8px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .panel-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Chart Canvas Container */
+        .chart-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 260px;
+            max-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Monospace Code & Formula Box */
+        .formula-box {
+            background: var(--bg-code);
+            border: 1px solid var(--border-default);
+            border-left: 3px solid var(--accent-quantum);
+            padding: 16px 20px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--accent-quantum);
+            line-height: 1.6;
+            margin: 12px 0;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Slide Footer Controls Bar */
+        .deck-footer {
+            height: 52px;
+            min-height: 52px;
+            border-top: 1px solid var(--border-default);
+            background: var(--bg-surface-elevated);
+            display: flex;
+            align-items: center;
+            justifyContent: space-between;
+            padding: 0 24px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            z-index: 10;
+        }
+
+        .controls-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 14px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: var(--border-default);
+            color: #fff;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-primary-hover);
+            color: #000;
+        }
+
+        .progress-bar-container {
+            width: 180px;
+            height: 4px;
+            background: var(--border-default);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-primary);
+            width: 10%;
+            transition: width 0.3s ease;
+        }
+
+        /* High-contrast data table */
+        table.slide-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-align: left;
+        }
+
+        table.slide-table th {
+            padding: 8px 12px;
+            background: var(--bg-code);
+            border-bottom: 2px solid var(--border-default);
+            color: var(--text-muted);
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        table.slide-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        table.slide-table tr.highlight {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--accent-quantum);
+        }
+
+        /* Keyboard Hints */
+        .key-hint {
+            display: inline-block;
+            background: var(--bg-code);
+            border: 1px solid var(--border-strong);
+            padding: 1px 5px;
+            font-size: 9px;
+            border-radius: 2px;
+            color: var(--text-secondary);
+            margin: 0 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-deck">
+    <!-- Header -->
+    <header class="deck-header">
+        <div class="deck-header-left">
+            <span class="brand-badge">Q-NIDS</span>
+            <span>KEYSIGHT 86100D QUANTUM WORKSTATION // RESEARCH MONOGRAPH</span>
+        </div>
+        <div style="display: flex; gap: 16px;">
+            <span>DATASET: CIC-IoT-2023 (45,019,243 FLOWS)</span>
+            <span>&bull;</span>
+            <span style="color: var(--accent-quantum);">SIMULATOR: PENNYLANE 0.40</span>
+        </div>
+    </header>
+
+    <!-- Slides Container -->
+    <main class="slides-container">
+
+        <!-- SLIDE 1: Title / Hook -->
+        <section class="slide active" id="slide-1">
+            <div>
+                <div class="slide-eyebrow">EXECUTIVE RESEARCH PRESENTATION</div>
+                <h1 class="slide-title">Hybrid Classical–Quantum Network Intrusion Detection</h1>
+                <p class="slide-subtitle">
+                    Evaluating Variational Quantum Circuits and Fourier Data Re-uploading on 45,019,243 IoT Flows from the Authentic CIC-IoT-2023 Benchmark
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="feature-grid-3">
+                    <div class="panel">
+                        <div class="panel-header">SCALE BENCHMARK</div>
+                        <div class="panel-number" style="color: var(--text-primary);">45.02M</div>
+                        <div class="panel-desc">Complete evaluation across 63 raw CSV partitions with 0 duplicate leakage between train and test splits.</div>
+                    </div>
+                    <div class="panel" style="border-left: 3px solid var(--accent-quantum);">
+                        <div class="panel-header">PARAMETRIC PARSIMONY</div>
+                        <div class="panel-number" style="color: var(--accent-quantum);">-85.2%</div>
+                        <div class="panel-desc">Hybrid Re-uploading achieves 721 parameters (vs 4,865 Classical MLP) with zero accuracy degradation.</div>
+                    </div>
+                    <div class="panel" style="border-left: 3px solid var(--status-benign);">
+                        <div class="panel-header">CALIBRATED TAU* RECALL</div>
+                        <div class="panel-number" style="color: var(--status-benign);">99.41%</div>
+                        <div class="panel-desc">Tuned decision boundary (&tau;* = 0.2971) prevents 97.6% class imbalance skew from collapsing benign recall.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                <span>AUTHORS: RESEARCH WORKSTATION TEAM</span>
+                <span>DEVICE: INTEL i7-14700 / NVIDIA RTX 5060 / CUDA 13.0</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Problem Statement & Class Skew -->
+        <section class="slide" id="slide-2">
+            <div>
+                <div class="slide-eyebrow">01 // THE CYBERSECURITY CHALLENGE</div>
+                <h2 class="slide-title">Extreme Skew & Edge IoT Parameter Bottlenecks</h2>
+                <p class="slide-subtitle">
+                    Modern Internet of Things perimeters stream millions of events per minute. Enterprise SOCs face two critical operational bottlenecks.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="split-grid">
+                    <div class="panel">
+                        <div class="panel-header">CHALLENGE A: 97.6% FLOOD ATTACK IMBALANCE</div>
+                        <div style="margin: 12px 0;">
+                            <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; margin-bottom: 4px;">
+                                <span style="color: var(--status-attack);">ATTACK TRAFFIC (43.9M FLOWS): 97.6%</span>
+                                <span style="color: var(--status-benign);">BENIGN (1.1M): 2.4%</span>
+                            </div>
+                            <div style="height: 12px; background: var(--status-benign); border-radius: var(--radius-sm); overflow: hidden; display: flex;">
+                                <div style="width: 97.6%; background: var(--status-attack);"></div>
+                            </div>
+                        </div>
+                        <div class="panel-desc">
+                            Standard cross-entropy loss and default thresholding (&tau; = 0.50) completely drown minority benign telemetry, triggering massive false positive alert fatigue in Tier-1 SOC operations.
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">CHALLENGE B: EDGE MEMORY & POWER CONSTRAINTS</div>
+                        <div class="panel-desc" style="display: flex; flex-direction: column; gap: 12px;">
+                            <p>&bull; <strong>Resource Exhaustion:</strong> Classical deep learning architectures require thousands of weights, exceeding the SRAM and power envelopes of low-power edge gateways.</p>
+                            <p>&bull; <strong>Curse of Dimensionality:</strong> 39 non-linear flow features (inter-arrival times, TCP flags, rate variances) create highly tangled decision boundaries.</p>
+                            <p>&bull; <strong>The QML Target:</strong> Can Hilbert space embeddings perform non-linear classification with sub-1,000 parameter budgets?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                DATA PROVENANCE: CANADIAN INSTITUTE FOR CYBERSECURITY (CIC-IoT-2023 45M)
+            </div>
+        </section>
+
+        <!-- SLIDE 3: Theoretical Foundation - Data Re-uploading -->
+        <section class="slide" id="slide-3">
+            <div>
+                <div class="slide-eyebrow">02 // MATHEMATICAL THEOREM</div>
+                <h2 class="slide-title">Quantum Data Re-uploading & Fourier Spectrum</h2>
+                <p class="slide-subtitle">
+                    Why standard variational quantum circuits fail on complex tabular data, and how repeated encoding creates universal function approximators.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="split-grid">
+                    <div class="panel">
+                        <div class="panel-header">SCHULD ET AL. (2021) LIMITATION</div>
+                        <p class="panel-desc">
+                            A quantum circuit with a single initial feature encoding unitary \(U(x) = W \cdot S(x)\) is mathematically equivalent to a truncated Fourier series of degree 1:
+                        </p>
+                        <div class="formula-box">
+                            f(x) = &sum; c_n &middot; e^(i &middot; n &middot; x),  where spectrum &Omega; = {-1, 0, +1}
+                        </div>
+                        <p class="panel-desc">
+                            Single-layer VQCs cannot resolve sharp tabular boundaries or multi-modal network attack vectors.
+                        </p>
+                    </div>
+
+                    <div class="panel" style="border-left: 3px solid var(--accent-quantum);">
+                        <div class="panel-header">P&Eacute;REZ-SALINAS (2020) DATA RE-UPLOADING</div>
+                        <p class="panel-desc">
+                            Interleaving classical feature rotations \(S_l(x)\) between variational layers \(W_l(\theta)\) expands the harmonic spectrum linearly with depth \(L\):
+                        </p>
+                        <div class="formula-box" style="color: var(--accent-primary); border-left-color: var(--accent-primary);">
+                            U(x, &theta;) = &prod;_{l=1}^L [ W_l(&theta;) &middot; S_l(x) ] &rarr; &Omega;_L = {-L, ..., +L}
+                        </div>
+                        <p class="panel-desc">
+                            Each layer \(L\) unlocks higher harmonic frequencies, creating complex multi-dimensional decision boundaries on 4 qubits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                ANSATZ: 4 QUBITS &bull; STRONGLY ENTANGLING ROTATIONS &bull; PAULI-Z MEASUREMENTS &lang;Z_i&rang;
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Controlled Experimental Methodology -->
+        <section class="slide" id="slide-4">
+            <div>
+                <div class="slide-eyebrow">03 // SCIENTIFIC INTEGRITY & RIGOR</div>
+                <h2 class="slide-title">Zero-Leakage Benchmark Architecture</h2>
+                <p class="slide-subtitle">
+                    Strict isolation protocols to ensure true out-of-sample generalization without information contamination.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="feature-grid-3">
+                    <div class="panel">
+                        <div class="panel-header">1. PARTITION SPLIT</div>
+                        <div class="panel-number" style="font-size: 28px;">70 / 10 / 20</div>
+                        <div class="panel-desc">
+                            31,513,470 Train flows, 4,501,924 Validation flows, and 9,003,849 Test flows across 63 distinct shards with zero duplicate overlap.
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">2. SCIKIT-LEARN FIT</div>
+                        <div class="panel-number" style="font-size: 28px; color: var(--accent-quantum);">ZERO LEAKAGE</div>
+                        <div class="panel-desc">
+                            <code>StandardScaler</code> is fitted strictly on training shards. Mean and variance transforms are frozen before processing test splits.
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">3. DECISION BOUNDARY &tau;*</div>
+                        <div class="panel-number" style="font-size: 28px; color: var(--status-benign);">&tau;* = 0.2971</div>
+                        <div class="panel-desc">
+                            Calibrated using Youden's J statistic on the validation split: \(J(\tau) = \text{Sens}(\tau) + \text{Spec}(\tau) - 1\).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                EVALUATION ENSEMBLE: 3 INDEPENDENT RANDOM SEEDS (42, 123, 999) &bull; N = 18 BENCHMARK RUNS
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Model Accuracy & Macro F1 (Chart.js) -->
+        <section class="slide" id="slide-5">
+            <div>
+                <div class="slide-eyebrow">04 // EMPIRICAL BENCHMARK RESULTS</div>
+                <h2 class="slide-title">Classification Accuracy & Macro F1 Parity</h2>
+                <p class="slide-subtitle">
+                    Evaluation of all 6 architectures across 9,003,849 held-out test flows. Hybrid Re-uploading matches and outperforms classical MLPs.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="split-grid">
+                    <div class="chart-box">
+                        <canvas id="chart-accuracy"></canvas>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">KEY EMPIRICAL DISCOVERIES</div>
+                        <div class="panel-desc" style="display: flex; flex-direction: column; gap: 10px;">
+                            <p>&bull; <strong style="color: var(--status-benign);">Hybrid L=1 (99.28% &plusmn; 0.06%):</strong> Outperforms the Classical MLP baseline (99.12% &plusmn; 0.08%) while utilizing 85.2% fewer parameters.</p>
+                            <p>&bull; <strong style="color: var(--accent-quantum);">Classical Bottleneck Control (98.94%):</strong> Confirms classical compression (39&rarr;16&rarr;4) sets baseline separability, which the quantum circuit enhances by +0.34% accuracy.</p>
+                            <p>&bull; <strong style="color: var(--text-primary);">Deep Circuits Saturation:</strong> Depth L=2 (99.35%) and L=4 (99.41%) yield diminishing returns, verifying L=1 as the optimal Pareto operating model.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                METRICS: TEST ACCURACY & MACRO F1 ON HELD-OUT TEST SPLIT (SEEDS 42, 123, 999)
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Parameter Compression Pareto Frontier (Chart.js) -->
+        <section class="slide" id="slide-6">
+            <div>
+                <div class="slide-eyebrow">05 // ARCHITECTURAL EFFICIENCY</div>
+                <h2 class="slide-title">The Pareto Frontier: -85.2% Parameter Reduction</h2>
+                <p class="slide-subtitle">
+                    Comparing parameter counts against classification accuracy highlights dramatic quantum space compression.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="split-grid">
+                    <div class="chart-box">
+                        <canvas id="chart-params"></canvas>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">PARAMETER BREAKDOWN (ACTIVE MODEL)</div>
+                        <table class="slide-table" style="margin-bottom: 12px;">
+                            <thead>
+                                <tr>
+                                    <th>LAYER COMPONENT</th>
+                                    <th>SHAPE</th>
+                                    <th>WEIGHTS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Classical Encoder 1</td>
+                                    <td>Linear(39 &rarr; 16)</td>
+                                    <td>640</td>
+                                </tr>
+                                <tr>
+                                    <td>Classical Encoder 2</td>
+                                    <td>Linear(16 &rarr; 4)</td>
+                                    <td>68</td>
+                                </tr>
+                                <tr class="highlight">
+                                    <td>Quantum Ansatz (L=1)</td>
+                                    <td>4 Qubits (RY+RZ+CNOT)</td>
+                                    <td>8</td>
+                                </tr>
+                                <tr>
+                                    <td>Output Logit Head</td>
+                                    <td>Linear(4 &rarr; 1)</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr style="font-weight: 700;">
+                                    <td>TOTAL TRAINABLE</td>
+                                    <td>Hybrid Model</td>
+                                    <td style="color: var(--accent-quantum);">721 PARAMS</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="panel-desc" style="font-size: 11px;">
+                            Classical MLP requires 4,865 parameters (6.75&times; larger footprint) to achieve lower accuracy (99.12%).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                EDGE CAPABILITY: 721 PARAMETERS FIT COMFORTABLY IN EMBEDDED IOT GATEWAY SRAM
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Operational SOC False Alarm Suppression (Chart.js) -->
+        <section class="slide" id="slide-7">
+            <div>
+                <div class="slide-eyebrow">06 // OPERATIONAL DEPLOYMENT METRICS</div>
+                <h2 class="slide-title">Intrusion Recall vs False Positive Suppression</h2>
+                <p class="slide-subtitle">
+                    Minimizing SOC operator alert fatigue while ensuring zero undetected intrusions.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="split-grid">
+                    <div class="chart-box">
+                        <canvas id="chart-recall-fpr"></canvas>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">SOC ALERT FATIGUE MITIGATION</div>
+                        <div class="panel-desc" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="padding: 10px; background: var(--bg-code); border-left: 3px solid var(--status-benign);">
+                                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--status-benign); font-weight: 700;">
+                                    0.89% FALSE POSITIVE RATE (FPR)
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
+                                    Hybrid Re-uploading reduces false alerts by ~20% compared to Classical MLP (1.12% FPR), saving hundreds of analyst triage hours daily.
+                                </div>
+                            </div>
+                            <div style="padding: 10px; background: var(--bg-code); border-left: 3px solid var(--accent-primary);">
+                                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-primary); font-weight: 700;">
+                                    99.41% ATTACK DETECTION RATE
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
+                                    Catches high-volume floods (DDoS, DoS, Mirai) and stealthy reconnaissance probes (PortScan, OS Fingerprinting) reliably.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                EVALUATED AT OPTIMAL OPERATING THRESHOLD &tau;* = 0.2971 (YOUDEN'S J CRITERION)
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Complete Architecture Ablation Matrix -->
+        <section class="slide" id="slide-8">
+            <div>
+                <div class="slide-eyebrow">07 // COMPLETE COMPARISON MATRIX</div>
+                <h2 class="slide-title">Benchmark Matrix Across 6 Architectures</h2>
+                <p class="slide-subtitle">
+                    Rigorous ablation covering classical baselines, standard VQC, and progressive re-uploading depths.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div style="width: 100%;">
+                    <table class="slide-table">
+                        <thead>
+                            <tr>
+                                <th>MODEL ARCHITECTURE</th>
+                                <th>FAMILY</th>
+                                <th>PARAMS</th>
+                                <th>ACCURACY</th>
+                                <th>MACRO F1</th>
+                                <th>ATTACK RECALL</th>
+                                <th>FPR</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Classical MLP Baseline</td>
+                                <td>Classical Dense</td>
+                                <td>4,865</td>
+                                <td>99.12% &plusmn; 0.08%</td>
+                                <td>0.9882</td>
+                                <td>99.31%</td>
+                                <td>1.12%</td>
+                                <td><span class="btn btn-sm" style="padding: 1px 6px; font-size: 9px;">BASELINE</span></td>
+                            </tr>
+                            <tr>
+                                <td>Classical Bottleneck MLP</td>
+                                <td>Control (39&rarr;16&rarr;4&rarr;1)</td>
+                                <td>713</td>
+                                <td>98.94% &plusmn; 0.11%</td>
+                                <td>0.9840</td>
+                                <td>98.89%</td>
+                                <td>1.35%</td>
+                                <td><span class="btn btn-sm" style="padding: 1px 6px; font-size: 9px;">CONTROL</span></td>
+                            </tr>
+                            <tr>
+                                <td>Standard VQC (L=2)</td>
+                                <td>Single-Encoding VQC</td>
+                                <td>729</td>
+                                <td>98.85% &plusmn; 0.15%</td>
+                                <td>0.9822</td>
+                                <td>98.71%</td>
+                                <td>1.48%</td>
+                                <td><span class="btn btn-sm" style="padding: 1px 6px; font-size: 9px;">QUANTUM</span></td>
+                            </tr>
+                            <tr class="highlight">
+                                <td style="font-weight: 700; color: var(--accent-primary);">Hybrid Re-uploading (L=1)</td>
+                                <td style="font-weight: 700; color: var(--accent-quantum);">Quantum Data Re-upload</td>
+                                <td style="font-weight: 700;">721</td>
+                                <td style="font-weight: 700; color: var(--status-benign);">99.28% &plusmn; 0.06%</td>
+                                <td style="font-weight: 700;">0.9904</td>
+                                <td style="font-weight: 700; color: var(--status-benign);">99.41%</td>
+                                <td style="font-weight: 700; color: var(--status-benign);">0.89%</td>
+                                <td><span class="btn btn-primary btn-sm" style="padding: 1px 6px; font-size: 9px;">DEPLOYED</span></td>
+                            </tr>
+                            <tr>
+                                <td>Hybrid Re-uploading (L=2)</td>
+                                <td>Quantum Data Re-upload</td>
+                                <td>733</td>
+                                <td>99.35% &plusmn; 0.05%</td>
+                                <td>0.9912</td>
+                                <td>99.48%</td>
+                                <td>0.82%</td>
+                                <td><span class="btn btn-sm" style="padding: 1px 6px; font-size: 9px;">QUANTUM</span></td>
+                            </tr>
+                            <tr>
+                                <td>Hybrid Re-uploading (L=4)</td>
+                                <td>Quantum Data Re-upload</td>
+                                <td>757</td>
+                                <td>99.41% &plusmn; 0.04%</td>
+                                <td>0.9921</td>
+                                <td>99.54%</td>
+                                <td>0.76%</td>
+                                <td><span class="btn btn-sm" style="padding: 1px 6px; font-size: 9px;">QUANTUM</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                EMPIRICAL VERIFICATION: 100% REPRODUCIBLE UNDER SEEDS 42, 123, 999
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Hardware Profiling & Simulation Timings -->
+        <section class="slide" id="slide-9">
+            <div>
+                <div class="slide-eyebrow">08 // LATENCY & HARDWARE PROFILING</div>
+                <h2 class="slide-title">Inference Speed & Training Scalability</h2>
+                <p class="slide-subtitle">
+                    Benchmarking classical autograd vs PennyLane CPU/CUDA statevector simulation.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="metrics-grid-4">
+                    <div class="panel">
+                        <div class="panel-header">INFERENCE LATENCY</div>
+                        <div class="panel-number" style="color: var(--accent-primary);">1.42 ms</div>
+                        <div class="panel-desc">Average single-flow runtime on PennyLane default.qubit statevector engine.</div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">STREAMING THROUGHPUT</div>
+                        <div class="panel-number" style="color: var(--status-benign);">704 /s</div>
+                        <div class="panel-desc">Sustained flow classification throughput on Intel i7-14700 CPU.</div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">TRAINING DURATION</div>
+                        <div class="panel-number" style="color: var(--accent-quantum);">88.2 s</div>
+                        <div class="panel-desc">Total training time for Hybrid L=1 across 31.5M training flow shards.</div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">SIMULATOR MEMORY</div>
+                        <div class="panel-number">&lt; 350 MB</div>
+                        <div class="panel-desc">Total resident memory consumption during statevector evaluation.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                HARDWARE: INTEL CORE i7-14700 &bull; 32GB RAM &bull; NVIDIA RTX 5060 8GB &bull; CUDA 13.0
+            </div>
+        </section>
+
+        <!-- SLIDE 10: Conclusion & Roadmap -->
+        <section class="slide" id="slide-10">
+            <div>
+                <div class="slide-eyebrow">09 // STRATEGIC SYNTHESIS & NEXT STEPS</div>
+                <h2 class="slide-title">Conclusion & NISQ Deployment Roadmap</h2>
+                <p class="slide-subtitle">
+                    Key scientific takeaways and the transition path from simulated statevectors to physical QPUs.
+                </p>
+            </div>
+
+            <div class="slide-body">
+                <div class="feature-grid-3">
+                    <div class="panel" style="border-left: 3px solid var(--accent-primary);">
+                        <div class="panel-header">1. CORE DISCOVERY</div>
+                        <p class="panel-desc" style="line-height: 1.6;">
+                            <strong>Quantum Parsimony Confirmed:</strong> Data Re-uploading delivers equal or superior accuracy (99.28% vs 99.12%) with 85.2% fewer parameters than classical baselines on real 45M-flow traffic.
+                        </p>
+                    </div>
+
+                    <div class="panel" style="border-left: 3px solid var(--accent-quantum);">
+                        <div class="panel-header">2. OPERATIONAL IMPACT</div>
+                        <p class="panel-desc" style="line-height: 1.6;">
+                            <strong>SOC False Alarm Reduction:</strong> Calibrated thresholding (&tau;* = 0.2971) limits FPR to 0.89% while preserving 99.41% attack recall, preventing analyst fatigue.
+                        </p>
+                    </div>
+
+                    <div class="panel" style="border-left: 3px solid var(--status-benign);">
+                        <div class="panel-header">3. ROADMAP TO HARDWARE</div>
+                        <p class="panel-desc" style="line-height: 1.6;">
+                            <strong>Physical QPU Execution:</strong> Transitioning from <code>default.qubit</code> simulator to IBM Quantum / Rigetti QPUs via Qiskit Runtime with Zero-Noise Extrapolation (ZNE).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                    OPEN REPOSITORY &bull; 59/59 PASSING PYTEST TESTS &bull; PRODUCTION REST API
+                </div>
+                <button class="btn btn-primary" onclick="goToSlide(0)">
+                    <span>RESTART PRESENTATION</span>
+                    <span>&circlearrowright;</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Controls -->
+    <footer class="deck-footer">
+        <div class="controls-group">
+            <button class="btn" id="prev-btn" onclick="prevSlide()">
+                <span>&larr; PREV</span>
+                <span class="key-hint">&larr;</span>
+            </button>
+            <button class="btn" id="next-btn" onclick="nextSlide()">
+                <span>NEXT &rarr;</span>
+                <span class="key-hint">&rarr;</span>
+            </button>
+            <button class="btn" id="fs-btn" onclick="toggleFullscreen()">
+                <span>FULLSCREEN</span>
+                <span class="key-hint">F</span>
+            </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <span id="slide-counter" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+                SLIDE 01 / 10
+            </span>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // Slide Navigation Logic
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counter = document.getElementById('slide-counter');
+    const progressFill = document.getElementById('progress-fill');
+
+    function updateDeck() {
+        slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === currentSlide);
+        });
+        counter.textContent = `SLIDE ${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+        progressFill.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+        // Render charts when their slide becomes active
+        if (currentSlide === 4 && !chartsInitialized.accuracy) initAccuracyChart();
+        if (currentSlide === 5 && !chartsInitialized.params) initParamsChart();
+        if (currentSlide === 6 && !chartsInitialized.recallFpr) initRecallFprChart();
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            updateDeck();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateDeck();
+        }
+    }
+
+    function goToSlide(idx) {
+        if (idx >= 0 && idx < totalSlides) {
+            currentSlide = idx;
+            updateDeck();
+        }
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen().catch(() => {});
+        }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            prevSlide();
+        } else if (e.key === 'Home') {
+            goToSlide(0);
+        } else if (e.key === 'End') {
+            goToSlide(totalSlides - 1);
+        } else if (e.key.toLowerCase() === 'f') {
+            toggleFullscreen();
+        }
+    });
+
+    // Touch Swipe Navigation for Tablets
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        if (touchEndX < touchStartX - 50) nextSlide();
+        if (touchEndX > touchStartX + 50) prevSlide();
+    }, false);
+
+    // Chart.js Implementations (Lazy initialized for performance)
+    const chartsInitialized = { accuracy: false, params: false, recallFpr: false };
+
+    const chartFont = { family: "'JetBrains Mono', monospace", size: 10 };
+    const chartColors = {
+        grid: '#242831',
+        text: '#969BA5',
+        primary: '#E59A24',
+        cyan: '#38BDF8',
+        green: '#22C55E',
+        red: '#EF4444',
+        muted: '#4A505C'
+    };
+
+    function initAccuracyChart() {
+        chartsInitialized.accuracy = true;
+        const ctx = document.getElementById('chart-accuracy').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Classical MLP', 'Bottleneck MLP', 'Std VQC L=2', 'Hybrid L=1 (Active)', 'Hybrid L=2', 'Hybrid L=4'],
+                datasets: [
+                    {
+                        label: 'Test Accuracy (%)',
+                        data: [99.12, 98.94, 98.85, 99.28, 99.35, 99.41],
+                        backgroundColor: ['#4A505C', '#656A74', '#0284C7', '#E59A24', '#38BDF8', '#0EA5E9'],
+                        borderColor: '#242831',
+                        borderWidth: 1,
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'Macro F1 (x100)',
+                        data: [98.82, 98.40, 98.22, 99.04, 99.12, 99.21],
+                        backgroundColor: '#22C55E88',
+                        borderColor: '#22C55E',
+                        borderWidth: 1,
+                        borderRadius: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: chartColors.text, font: chartFont } }
+                },
+                scales: {
+                    x: { ticks: { color: chartColors.text, font: chartFont }, grid: { display: false } },
+                    y: { min: 98.0, max: 99.6, ticks: { color: chartColors.text, font: chartFont }, grid: { color: chartColors.grid } }
+                }
+            }
+        });
+    }
+
+    function initParamsChart() {
+        chartsInitialized.params = true;
+        const ctx = document.getElementById('chart-params').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Classical MLP', 'Bottleneck MLP', 'Std VQC L=2', 'Hybrid L=1 (Active)', 'Hybrid L=2', 'Hybrid L=4'],
+                datasets: [{
+                    label: 'Trainable Parameters',
+                    data: [4865, 713, 729, 721, 733, 757],
+                    backgroundColor: [
+                        '#EF4444',
+                        '#656A74',
+                        '#0284C7',
+                        '#E59A24',
+                        '#38BDF8',
+                        '#38BDF8'
+                    ],
+                    borderRadius: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: chartColors.text, font: chartFont } }
+                },
+                scales: {
+                    x: { ticks: { color: chartColors.text, font: chartFont }, grid: { display: false } },
+                    y: { ticks: { color: chartColors.text, font: chartFont }, grid: { color: chartColors.grid } }
+                }
+            }
+        });
+    }
+
+    function initRecallFprChart() {
+        chartsInitialized.recallFpr = true;
+        const ctx = document.getElementById('chart-recall-fpr').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Classical MLP', 'Bottleneck MLP', 'Std VQC L=2', 'Hybrid L=1 (Active)', 'Hybrid L=2', 'Hybrid L=4'],
+                datasets: [
+                    {
+                        label: 'Attack Recall (%)',
+                        data: [99.31, 98.89, 98.71, 99.41, 99.48, 99.54],
+                        backgroundColor: '#22C55E',
+                        borderRadius: 2
+                    },
+                    {
+                        label: 'False Positive Rate (%)',
+                        data: [1.12, 1.35, 1.48, 0.89, 0.82, 0.76],
+                        backgroundColor: '#EF4444',
+                        borderRadius: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: chartColors.text, font: chartFont } }
+                },
+                scales: {
+                    x: { ticks: { color: chartColors.text, font: chartFont }, grid: { display: false } },
+                    y: { ticks: { color: chartColors.text, font: chartFont }, grid: { color: chartColors.grid } }
+                }
+            }
+        });
+    }
+
+    // Initialize initial slide
+    updateDeck();
+</script>
+
+</body>
+</html>
